@@ -64,8 +64,8 @@
 
   --knicks: #f58426;        /* new york knicks orange */
   --knicks-blue: #1d6bb6;   /* knicks secondary blue */
-  --spurs: #6e7378;         /* san antonio spurs grey */
-  --spurs-silver: #c4ced4;  /* spurs light silver */
+  --spurs: #8b5e3c;         /* san antonio spurs (warm walnut replacement) */
+  --spurs-silver: #d2b49a;  /* spurs light walnut */
 
   --card: #ffffff;
   --card-foreground: #0b0b0c;
@@ -82,13 +82,13 @@
   --accent-foreground: #b4540c;
   --destructive: #d4361f;
 
-  --border: #e6e6e8;
+  --border: #d6b278; /* warm floor tone for stat numerals and subtle accents */
   --input: #e0e0e3;
   --ring: #f58426;
 
   /* chart series, knicks orange first then spurs grey, with supporting tones */
   --chart-1: #f58426;
-  --chart-2: #6e7378;
+  --chart-2: #8b5e3c;
   --chart-3: #1d6bb6;
   --chart-4: #b8c4cc;
   --chart-5: #2b2f33;
