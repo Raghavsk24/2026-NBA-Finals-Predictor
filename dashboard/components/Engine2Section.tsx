@@ -66,14 +66,14 @@ export function Engine2Section() {
 
           <Card className="p-5">
             <div className="flex items-center justify-between">
-              <p className="eyebrow text-[11px] text-walnut-honey">Power Rating</p>
+              <p className="eyebrow text-[11px] text-walnut">Power Rating</p>
               <span className="text-xs font-medium text-muted-foreground">
                 <span className="text-ink">{Math.round(blend * 100)}%</span> ELO Rating /{" "}
                 <span className="text-ink">{Math.round((1 - blend) * 100)}%</span> Pythagorean Expectation
               </span>
             </div>
             <Slider
-              className="mt-4 [&_[data-slot=slider-range]]:bg-walnut-honey [&_[data-slot=slider-thumb]]:border-walnut-honey"
+              className="mt-4 [&_[data-slot=slider-range]]:bg-walnut [&_[data-slot=slider-thumb]]:border-walnut"
               min={0}
               max={1}
               step={0.05}
@@ -81,15 +81,15 @@ export function Engine2Section() {
               onValueChange={(v) => setBlend(firstNum(v))}
             />
             <p className="mt-3 text-xs text-muted-foreground">
-              Slide toward ELO Rating to trust head to head power ratings, toward Pythagorean
-              Expectation to trust points scored and allowed.
+              Slide toward ELO Rating to give more weight to season ELO ratings and toward
+              Pythagorean Expectation to give more weight to scoring volume.
             </p>
           </Card>
         </div>
       </div>
 
       <Card className="p-6">
-        <p className="stat-display mb-5 text-center text-2xl text-walnut md:text-3xl">
+        <p className="stat-display mb-5 text-center text-base text-walnut md:text-lg">
           Knicks v Spurs Season Elo Trajectory
         </p>
         <ChartBox height={256}>
@@ -116,14 +116,14 @@ export function Engine2Section() {
                 contentStyle={{ borderRadius: 8, border: "1px solid #e6e6e8", fontSize: 12 }}
                 labelFormatter={(g) => `Game ${g}`}
               />
-              <Line type="monotone" dataKey="NYK" name="Knicks" stroke={TEAMS.NYK.color} strokeWidth={2.5} dot={false} />
               <Line type="monotone" dataKey="SAS" name="Spurs" stroke={TEAMS.SAS.color} strokeWidth={2.5} dot={false} />
+              <Line type="monotone" dataKey="NYK" name="Knicks" stroke={TEAMS.NYK.color} strokeWidth={2.5} dot={false} />
             </LineChart>
           )}
         </ChartBox>
         <div className="mt-3 flex items-center justify-center gap-6 text-xs text-muted-foreground">
-          <Legend color={TEAMS.NYK.color} label="Knicks" />
           <Legend color={TEAMS.SAS.color} label="Spurs" />
+          <Legend color={TEAMS.NYK.color} label="Knicks" />
         </div>
       </Card>
     </div>

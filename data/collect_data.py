@@ -233,6 +233,8 @@ def build_player(name, pos, fallback_id, base, adv, roster_rows, fallback_line=N
         # ts and usg drive the offense, drtg/stl/blk drive the defensive matchup layer.
         "min": 32.0, "pts": 15.0, "reb": 5.0, "ast": 4.0, "ts": 0.560, "usg": 0.220,
         "stl": 0.8, "blk": 0.5, "drtg": 114.0, "dreb_pct": 0.150,
+        # the player's own four factors, used by the per player efficiency chart in the dashboard
+        "efg": 0.520, "tov": 0.130, "oreb": 0.040, "ftr": 0.250,
     }
     # a curated line lets us carry an injured player who has no usable season stats
     if fallback_line:
@@ -248,6 +250,9 @@ def build_player(name, pos, fallback_id, base, adv, roster_rows, fallback_line=N
         record["ast"] = round(b.get("AST", record["ast"]), 1)
         record["stl"] = round(b.get("STL", record["stl"]), 2)
         record["blk"] = round(b.get("BLK", record["blk"]), 2)
+        # free throw rate is free throw attempts over field goal attempts
+        if b.get("FGA"):
+            record["ftr"] = round(b["FTA"] / b["FGA"], 3)
 
     a = None
     if adv:
@@ -257,6 +262,9 @@ def build_player(name, pos, fallback_id, base, adv, roster_rows, fallback_line=N
         record["usg"] = round(a.get("USG_PCT", record["usg"]), 3)
         record["drtg"] = round(a.get("DEF_RATING", record["drtg"]), 1)
         record["dreb_pct"] = round(a.get("DREB_PCT", record["dreb_pct"]), 3)
+        record["efg"] = round(a.get("EFG_PCT", record["efg"]), 3)
+        record["tov"] = round(a.get("TM_TOV_PCT", record["tov"]), 3)
+        record["oreb"] = round(a.get("OREB_PCT", record["oreb"]), 3)
     return record
 
 

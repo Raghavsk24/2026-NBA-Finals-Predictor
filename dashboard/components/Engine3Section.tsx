@@ -1,12 +1,14 @@
 "use client";
 
-// engine 3 on the dashboard: the four factor player impact model and the interactive heart of
-// the project. toggling a player to injured or dragging his minutes reruns all five layers and
-// the 10,000 monte carlo simulations in the browser, so the prediction, the four factor radar
-// and every projected stat line update live.
+/*
+  engine 3 on the dashboard: the four factor player impact model and the interactive heart of the
+  project. toggling a starter to injured or dragging his minutes reruns all five layers and the
+  10,000 monte carlo simulations in the browser, so the prediction, the four factor radar and every
+  projected stat line update live. the roster lab lines the two starting fives up by position so
+  each knicks player sits across from the spur who guards him.
+*/
 
-import { useMemo, useState } from "react";
-import { motion } from "motion/react";
+import { Fragment, useMemo, useState } from "react";
 import {
   predictLayered,
   buildDefenders,
@@ -18,20 +20,26 @@ import { TEAMS, type TeamKey } from "@/lib/teams";
 import { WinProbabilityBar } from "@/components/WinProbabilityBar";
 import { SeriesLengthBars } from "@/components/SeriesLengthBars";
 import { FourFactorRadar } from "@/components/FourFactorRadar";
+import { PlayerFourFactorRadar } from "@/components/PlayerFourFactorRadar";
 import { Card } from "@/components/ui/card";
 import { Slider } from "@/components/ui/slider";
 import { Switch } from "@/components/ui/switch";
-import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
+import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip";
 import { firstNum } from "@/lib/utils";
 
 const defenders = buildDefenders(engine3Data);
 const DEFAULT_INJURED = engine3Data.default_injured;
-const accuracy = engine3Data.model.train_accuracy;
+const POSITIONS = ["PG", "SG", "SF", "PF", "C"];
 
-function teamPlayers(key: TeamKey): LayeredPlayer[] {
-  return [...engine3Data.players[key].starters, ...engine3Data.players[key].bench];
+// only the starting fives are exposed in the roster lab, indexed by position for the matchup grid
+function startersByPos(key: TeamKey): Record<string, LayeredPlayer> {
+  const map: Record<string, LayeredPlayer> = {};
+  engine3Data.players[key].starters.forEach((p) => (map[p.pos] = p));
+  return map;
 }
+const nykByPos = startersByPos("NYK");
+const sasByPos = startersByPos("SAS");
 
 export function Engine3Section() {
   const [injured, setInjured] = useState<Set<string>>(() => new Set(DEFAULT_INJURED));
@@ -61,101 +69,74 @@ export function Engine3Section() {
     setMinutes((prev) => ({ ...prev, [name]: value }));
   }
 
-  function reset() {
-    setInjured(new Set(DEFAULT_INJURED));
-    setMinutes({});
-  }
-
-  const injuredList = [...injured];
-
   return (
-    <div className="flex flex-col gap-6">
-      <div className="grid gap-6 lg:grid-cols-5">
-        <Card className="lg:col-span-3 p-6">
-          <WinProbabilityBar nyk={result.series.NYK} sas={result.series.SAS} />
-          <div className="mt-8">
-            <SeriesLengthBars data={result.seriesLength} />
-          </div>
-        </Card>
+    <TooltipProvider>
+      <div className="flex flex-col gap-6">
+        <div className="grid gap-6 lg:grid-cols-5">
+          <Card className="lg:col-span-3 p-6">
+            <WinProbabilityBar nyk={result.series.NYK} sas={result.series.SAS} />
+            <div className="mt-8">
+              <SeriesLengthBars data={result.seriesLength} />
+            </div>
+          </Card>
 
-        <Card className="lg:col-span-2 p-6">
-          <div className="flex items-center justify-between">
-            <p className="eyebrow text-[11px] text-muted-foreground">effective four factors</p>
-            <Badge variant="outline" className="text-[11px]">
-              model fit {(accuracy * 100).toFixed(1)}%
-            </Badge>
-          </div>
-          <FourFactorRadar nyk={result.effectiveFactors.NYK} sas={result.effectiveFactors.SAS} />
-          <div className="mt-1 flex items-center justify-center gap-6 text-xs text-muted-foreground">
-            <Legend color={TEAMS.NYK.color} label="Knicks" />
-            <Legend color={TEAMS.SAS.color} label="Spurs" />
-          </div>
-        </Card>
-      </div>
+          <Card className="lg:col-span-2 p-6">
+            <p className="eyebrow text-[11px] text-walnut">Four Factor Efficiency</p>
+            <FourFactorRadar nyk={result.effectiveFactors.NYK} sas={result.effectiveFactors.SAS} />
+            <div className="mt-1 flex items-center justify-center gap-6 text-xs text-muted-foreground">
+              <Legend color={TEAMS.NYK.color} label="Knicks" />
+              <Legend color={TEAMS.SAS.color} label="Spurs" />
+            </div>
+          </Card>
+        </div>
 
-      <Card className="p-6">
-        <div className="flex flex-wrap items-center justify-between gap-3">
+        <Card className="p-6">
           <div>
             <p className="stat-display text-2xl text-ink">Roster Lab</p>
             <p className="text-sm text-muted-foreground">
-              Flip a player to injured or drag his minutes to rebuild the series.
+              Flip a starter to injured or drag his minutes to rebuild the series. Each Knick is
+              lined up against the Spur who guards him.
             </p>
           </div>
-          <div className="flex items-center gap-3">
-            {injuredList.length > 0 && (
-              <span className="text-xs text-muted-foreground">
-                Out:{" "}
-                <span className="font-semibold text-ink">{injuredList.join(", ")}</span>
-              </span>
-            )}
-            <Button size="sm" variant="outline" onClick={reset}>
-              Reset
-            </Button>
-          </div>
-        </div>
 
-        <div className="mt-6 grid gap-6 lg:grid-cols-2">
-          {(["NYK", "SAS"] as TeamKey[]).map((key) => (
-            <div key={key}>
-              <div className="mb-3 flex items-center gap-2">
+          <div className="mt-6 grid grid-cols-2 gap-x-4 gap-y-4 sm:gap-x-6">
+            {(["NYK", "SAS"] as TeamKey[]).map((key) => (
+              <div key={key} className="flex items-center gap-2">
                 <img src={TEAMS[key].logo} alt="" className="h-5 w-5 object-contain" />
                 <span className="text-sm font-bold uppercase tracking-wide">{TEAMS[key].name}</span>
               </div>
-              <div className="grid gap-3 sm:grid-cols-2">
-                {teamPlayers(key).map((player) => (
-                  <PlayerCard
-                    key={player.id}
-                    player={player}
-                    teamColor={TEAMS[key].color}
-                    injured={injured.has(player.name)}
-                    minutesValue={player.name in minutes ? minutes[player.name] : player.min}
-                    proj={projByName.get(player.name)}
-                    onToggle={(healthy) => toggleHealthy(player.name, healthy)}
-                    onMinutes={(m) => setPlayerMinutes(player.name, m)}
-                  />
-                ))}
-              </div>
-            </div>
-          ))}
-        </div>
-      </Card>
+            ))}
 
-      <Card className="p-6">
-        <p className="eyebrow mb-4 text-[11px] text-muted-foreground">key matchups, projected points</p>
-        <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-5">
-          {engine3Data.players.matchups.map((m) => (
-            <MatchupCard
-              key={m.pos}
-              pos={m.pos}
-              nyk={projByName.get(m.nyk)}
-              sas={projByName.get(m.sas)}
-              nykName={m.nyk}
-              sasName={m.sas}
-            />
-          ))}
-        </div>
-      </Card>
-    </div>
+            {POSITIONS.map((pos) => {
+              const nykP = nykByPos[pos];
+              const sasP = sasByPos[pos];
+              return (
+                <Fragment key={pos}>
+                  <PlayerCard
+                    player={nykP}
+                    teamColor={TEAMS.NYK.color}
+                    injured={injured.has(nykP.name)}
+                    minutesValue={nykP.name in minutes ? minutes[nykP.name] : nykP.min}
+                    proj={projByName.get(nykP.name)}
+                    onToggle={(healthy) => toggleHealthy(nykP.name, healthy)}
+                    onMinutes={(m) => setPlayerMinutes(nykP.name, m)}
+                  />
+                  <PlayerCard
+                    player={sasP}
+                    teamColor={TEAMS.SAS.color}
+                    injured={injured.has(sasP.name)}
+                    minutesValue={sasP.name in minutes ? minutes[sasP.name] : sasP.min}
+                    proj={projByName.get(sasP.name)}
+                    onToggle={(healthy) => toggleHealthy(sasP.name, healthy)}
+                    onMinutes={(m) => setPlayerMinutes(sasP.name, m)}
+                  />
+                </Fragment>
+              );
+            })}
+          </div>
+        </Card>
+      </div>
+    </TooltipProvider>
   );
 }
 
@@ -189,9 +170,25 @@ function PlayerCard({
           className="h-10 w-10 shrink-0 rounded-full border border-border object-cover object-top"
         />
         <div className="min-w-0 flex-1">
-          <div className="truncate text-sm font-bold">{player.name}</div>
+          <div className="flex items-center gap-1.5">
+            <span className="truncate text-sm font-bold">{player.name}</span>
+            <Tooltip>
+              <TooltipTrigger
+                aria-label={`${player.name} four factor efficiency chart`}
+                className="inline-flex shrink-0 text-muted-foreground transition-colors hover:text-walnut"
+              >
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" className="h-3.5 w-3.5">
+                  <circle cx="12" cy="12" r="10" />
+                  <path d="M12 16v-4M12 8h.01" strokeLinecap="round" />
+                </svg>
+              </TooltipTrigger>
+              <TooltipContent className="block w-auto max-w-none border border-border bg-white p-3 text-ink shadow-lg">
+                <PlayerFourFactorRadar player={player} color={teamColor} />
+              </TooltipContent>
+            </Tooltip>
+          </div>
           <div className="text-xs text-muted-foreground">
-            {player.pos} &middot; {player.usg ? `${(player.usg * 100).toFixed(0)}% usg` : ""}
+            {player.pos} &middot; {(player.usg * 100).toFixed(0)}% usage
           </div>
         </div>
         <Switch checked={!injured} onCheckedChange={onToggle} aria-label={`${player.name} healthy`} />
@@ -239,71 +236,6 @@ function ProjStat({ label, value, color }: { label: string; value: number; color
         {value.toFixed(1)}
       </div>
       <div className="text-[10px] uppercase tracking-wide text-muted-foreground">{label}</div>
-    </div>
-  );
-}
-
-function MatchupCard({
-  pos,
-  nyk,
-  sas,
-  nykName,
-  sasName,
-}: {
-  pos: string;
-  nyk?: Projection;
-  sas?: Projection;
-  nykName: string;
-  sasName: string;
-}) {
-  const nykPts = nyk?.pts ?? 0;
-  const sasPts = sas?.pts ?? 0;
-  const total = nykPts + sasPts || 1;
-  const nykShare = (nykPts / total) * 100;
-
-  return (
-    <div className="rounded-xl border border-border p-3">
-      <div className="mb-2 text-center text-xs font-bold uppercase tracking-wider text-muted-foreground">
-        {pos}
-      </div>
-      <MatchupSide name={nykName} proj={nyk} color={TEAMS.NYK.color} />
-      <div className="my-2 h-2 w-full overflow-hidden rounded-full bg-secondary">
-        <motion.div
-          className="h-full"
-          style={{ backgroundColor: TEAMS.NYK.color }}
-          initial={false}
-          animate={{ width: `${nykShare}%` }}
-          transition={{ type: "spring", stiffness: 120, damping: 20 }}
-        />
-      </div>
-      <MatchupSide name={sasName} proj={sas} color={TEAMS.SAS.color} />
-    </div>
-  );
-}
-
-function MatchupSide({
-  name,
-  proj,
-  color,
-}: {
-  name: string;
-  proj?: Projection;
-  color: string;
-}) {
-  const last = name.split(" ").slice(-1)[0];
-  return (
-    <div className="flex items-center justify-between">
-      <span className="flex items-center gap-2 text-sm font-semibold">
-        <span className="h-2.5 w-2.5 rounded-full" style={{ backgroundColor: color }} />
-        {last}
-      </span>
-      {proj ? (
-        <span className="stat-display text-lg" style={{ color }}>
-          {proj.pts.toFixed(1)}
-        </span>
-      ) : (
-        <span className="text-xs font-semibold text-destructive">OUT</span>
-      )}
     </div>
   );
 }

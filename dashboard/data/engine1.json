@@ -7,20 +7,20 @@
     "SAS": 115.4
   },
   "per_game": {
-    "nyk_home": 53.4,
-    "nyk_away": 35.4,
-    "sas_home": 64.6,
-    "sas_away": 46.6
+    "nyk_home": 52.9,
+    "nyk_away": 37.4,
+    "sas_home": 62.6,
+    "sas_away": 47.1
   },
   "series": {
-    "NYK": 34.8,
-    "SAS": 65.2
+    "NYK": 37.2,
+    "SAS": 62.8
   },
   "series_length": {
-    "4": 12.6,
-    "5": 26.9,
-    "6": 29.4,
-    "7": 31.0
+    "4": 12.7,
+    "5": 26.0,
+    "6": 30.3,
+    "7": 30.9
   },
   "inputs": {
     "NYK": {
@@ -35,6 +35,7 @@
       "drtg": 110.4,
       "pace": 100.72
     },
-    "league_avg_drtg": 114.73
+    "league_avg_drtg": 114.73,
+    "game_margin_sd": 15.25
   }
 }

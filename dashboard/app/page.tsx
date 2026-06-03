@@ -18,7 +18,7 @@ const ENGINE2_DESC =
   'This is engine 2: the elo power rating model. It rates every team with an elo system built game by game across the 2025-26 season. It then combines that with each finals team\'s pythagorean expectation (an estimate of how many games a team "should win" based on their offesive and defensive ratings) to predict each team\'s probability of winning the series after running 10,000 monte carlo simulations. The elo system is a better metric than engine 1 because it rewards beating good teams with higher power ratings and it adjusts for margin of victory.';
 
 const ENGINE3_DESC =
-  "This is engine 3: the four factor player-impact model. This is the most complex of the three predictors. It layers player-level projections on top of team-level four factors to produce a more granular prediction that can also be used to explore what-if scenarios with injuries and minute changes between starters.";
+  "This is engine 3: the four factor player-impact model. This is the most complex of the three predictors. It layers player-level projections on top of team-level four factors to produce a more granular prediction that can also be used to explore how the outcome of the series is affected when players are injured or playing time varies.";
 
 export default function Home() {
   return (

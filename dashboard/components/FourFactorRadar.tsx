@@ -9,11 +9,11 @@ import { TEAMS } from "@/lib/teams";
 import { ChartBox } from "@/components/ChartBox";
 
 export function FourFactorRadar({ nyk, sas }: { nyk: FourFactors; sas: FourFactors }) {
-  // turnover percent is flipped into ball security so that higher is better on every axis
+  // turnover percent is flipped so that higher is better on every axis
   const data = [
-    { factor: "Shooting", NYK: nyk.efg * 100, SAS: sas.efg * 100 },
-    { factor: "Ball Security", NYK: (1 - nyk.tov) * 100, SAS: (1 - sas.tov) * 100 },
-    { factor: "Off. Boards", NYK: nyk.oreb * 100, SAS: sas.oreb * 100 },
+    { factor: "Field Goals", NYK: nyk.efg * 100, SAS: sas.efg * 100 },
+    { factor: "Defense", NYK: (1 - nyk.tov) * 100, SAS: (1 - sas.tov) * 100 },
+    { factor: "Offensive Rebounds", NYK: nyk.oreb * 100, SAS: sas.oreb * 100 },
     { factor: "Free Throws", NYK: nyk.ftr * 100, SAS: sas.ftr * 100 },
   ];
 

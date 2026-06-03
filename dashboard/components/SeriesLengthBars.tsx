@@ -1,6 +1,6 @@
 "use client";
 
-// how likely the series is to last 4, 5, 6 or 7 games, drawn as a small spurs grey column chart that animates its heights when the inputs change
+// how likely the series is to last 4, 5, 6 or 7 games, drawn as a small walnut column chart that animates its heights when the inputs change
 
 import { motion } from "motion/react";
 
@@ -25,7 +25,7 @@ export function SeriesLengthBars({ data }: { data: Record<string, number> }) {
               <span className="stat-display text-lg text-ink">{value.toFixed(0)}%</span>
               <div className="flex h-24 w-full items-end overflow-hidden rounded-md bg-secondary">
                 <motion.div
-                  className="w-full rounded-md bg-spurs"
+                  className="w-full rounded-md bg-walnut"
                   initial={false}
                   animate={{ height: `${(value / max) * 100}%` }}
                   transition={{ type: "spring", stiffness: 130, damping: 20 }}

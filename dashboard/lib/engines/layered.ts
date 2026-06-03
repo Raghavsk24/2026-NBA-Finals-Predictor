@@ -21,6 +21,10 @@ export interface LayeredPlayer {
   blk: number;
   drtg: number;
   dreb_pct: number;
+  efg: number;
+  tov: number;
+  oreb: number;
+  ftr: number;
 }
 
 export interface LayeredTeam {
