@@ -27,6 +27,7 @@ export default function Home() {
 
       <EngineSection
         id="engine-1"
+        topFlush
         number="01"
         title="PACE-ADJUSTED EFFICIENCY MODEL"
         description={<p className="leading-relaxed">{ENGINE1_DESC}</p>}

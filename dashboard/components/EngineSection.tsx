@@ -11,16 +11,21 @@ export function EngineSection({
   title,
   description,
   children,
+  topFlush = false,
 }: {
   id: string;
   number: string;
   title: string;
   description: React.ReactNode;
   children: React.ReactNode;
+  topFlush?: boolean;
 }) {
+  const sectionPadding = topFlush ? "pt-0 pb-5 md:pb-7" : "py-5 md:py-7";
+  const innerClasses = topFlush ? "rounded-b-2xl py-6 md:py-8" : "rounded-2xl py-12 md:py-16";
+
   return (
-    <section id={id} className="scroll-mt-6 px-4 py-5 md:py-7">
-      <div className="mx-auto max-w-6xl rounded-2xl bg-white px-5 py-12 shadow-sm ring-1 ring-black/5 md:px-10 md:py-16">
+    <section id={id} className={`scroll-mt-6 px-4 ${sectionPadding}`}>
+      <div className={`mx-auto max-w-6xl bg-white px-5 shadow-sm ring-1 ring-black/5 md:px-10 ${innerClasses}`}>
         <div className="flex items-center gap-4">
           <span className="stat-display select-none text-6xl leading-none text-border md:text-7xl">
             {number}
