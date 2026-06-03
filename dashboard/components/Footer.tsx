@@ -4,7 +4,7 @@
 export function Footer() {
   const year = 2026;
   return (
-    <footer className="border-t border-border bg-background">
+    <footer className="border-t border-border/70">
       <div className="mx-auto max-w-6xl px-5 py-10">
         <div className="flex flex-col gap-6 md:flex-row md:items-start md:justify-between">
           <div>

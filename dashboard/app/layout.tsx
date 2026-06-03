@@ -46,7 +46,11 @@ export default function RootLayout({
       lang="en"
       className={`${hanken.variable} ${anton.variable} ${mono.variable} h-full antialiased`}
     >
-      <body className="min-h-full flex flex-col">{children}</body>
+      <body className="min-h-full flex flex-col">
+        {/* fixed wooden floor and grid backdrop that shows through the whole page */}
+        <div className="floor-backdrop" aria-hidden="true" />
+        {children}
+      </body>
     </html>
   );
 }

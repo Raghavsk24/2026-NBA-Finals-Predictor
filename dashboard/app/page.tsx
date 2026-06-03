@@ -31,7 +31,6 @@ export default function Home() {
         title="Elo Power Rating Model"
         blurb="Every team is rated with an Elo system built game by game across the season, rewarding wins over strong opponents and margin of victory. It is then blended with each team's Pythagorean win expectation from points scored and allowed."
         badge="Elo + Pythagorean"
-        tone="alt"
       >
         <Engine2Section />
       </EngineSection>

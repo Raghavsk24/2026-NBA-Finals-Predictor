@@ -10,7 +10,6 @@ export function EngineSection({
   title,
   blurb,
   badge,
-  tone = "light",
   children,
 }: {
   id: string;
@@ -19,14 +18,12 @@ export function EngineSection({
   title: string;
   blurb: string;
   badge?: string;
-  tone?: "light" | "alt";
   children: React.ReactNode;
 }) {
   return (
-    <section
-      id={id}
-      className={`scroll-mt-6 border-b border-border ${tone === "alt" ? "bg-secondary/40" : "bg-background"}`}
-    >
+    /* transparent so the fixed wooden floor backdrop shows through behind the content */
+    <section id={id} className="scroll-mt-6 border-b border-border/70">
+
       <div className="mx-auto max-w-6xl px-5 py-14 md:py-20">
         <div className="flex items-start gap-4">
           <span className="stat-display select-none text-6xl leading-none text-border md:text-7xl">

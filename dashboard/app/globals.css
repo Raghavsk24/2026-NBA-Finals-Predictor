@@ -130,11 +130,26 @@
     letter-spacing: 0.08em;
     text-transform: uppercase;
   }
-  /* a faint hardwood court grid used behind hero and section bands */
-  .court-grid {
+  /*
+    full page hardwood backdrop: a fixed layer behind all content that draws the court grid
+    over a warm maple wood gradient so the whole page reads like an nba floor rather than a
+    plain white sheet. it sits at a negative z index so the white content cards float on top.
+  */
+  .floor-backdrop {
+    position: fixed;
+    inset: 0;
+    z-index: -10;
+    pointer-events: none;
+    background-color: #ffffff;
     background-image:
-      linear-gradient(to right, rgba(11, 11, 12, 0.045) 1px, transparent 1px),
-      linear-gradient(to bottom, rgba(11, 11, 12, 0.045) 1px, transparent 1px);
-    background-size: 28px 28px;
+      linear-gradient(to right, rgba(11, 11, 12, 0.055) 1px, transparent 1px),
+      linear-gradient(to bottom, rgba(11, 11, 12, 0.055) 1px, transparent 1px),
+      linear-gradient(
+        165deg,
+        rgba(214, 178, 124, 0.26) 0%,
+        rgba(231, 205, 168, 0.13) 45%,
+        rgba(205, 164, 104, 0.24) 100%
+      );
+    background-size: 28px 28px, 28px 28px, 100% 100%;
   }
 }

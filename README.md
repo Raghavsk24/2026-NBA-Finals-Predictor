@@ -59,7 +59,7 @@ adjusted_ortg = ortg + (opponent_drtg - league_avg_drtg)
 expected_points = (adjusted_ortg / 100) * expected_pace
 ```
 
-The point margin is treated as a normal distribution with a standard deviation of **13** points, home court is worth **3** points, and the model plays the 2-2-1-1-1 series **10,000** times.
+The point margin is treated as a normal distribution whose standard deviation is computed directly from the Knicks' and Spurs' actual game results this season, about **15.25** points, rather than assumed. Home court is worth **3** points, and the model plays the 2-2-1-1-1 series **10,000** times.
 
 ### 2. Elo Power Rating Model
 
@@ -102,7 +102,7 @@ where each `z_i` is a standardized four factor differential plus a home flag. Th
 1. Clone the repository.
 
 ```bash
-git clone https://github.com/RaghavSenthilKumar/2026-NBA-Finals-Predictor.git
+git clone https://github.com/Raghavsk24/2026-NBA-Finals-Predictor.git
 cd 2026-NBA-Finals-Predictor
 ```
 
@@ -121,7 +121,7 @@ python data/collect_data.py
 4. Run the engines. Each one prints its prediction and writes its output to data/processed.
 
 ```bash
-python engines/Simple_Efficiency_Prediction_Model.py
+python engines/pace_adjusted_efficiency_model.py
 python engines/elo_power_rating_model.py
 python engines/train_four_factor_model.py
 python engines/four_factor_player_impact_model.py

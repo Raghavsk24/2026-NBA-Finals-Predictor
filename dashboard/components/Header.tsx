@@ -1,7 +1,11 @@
-// the page hero. it titles the matchup knicks v spurs, shows both team logos, and lays out the
-// starting five for each team with headshots and names underneath.
+/*
+  the page hero. it titles the matchup knicks v spurs, shows both team logos, lays out the
+  starting five for each team with headshots and names underneath, and ends with a scroll cue
+  that drops the user into the first engine.
+*/
 
 import { RosterCard } from "@/components/RosterCard";
+import { ScrollCue } from "@/components/ScrollCue";
 import { playersData } from "@/lib/data";
 import { TEAMS } from "@/lib/teams";
 
@@ -9,12 +13,13 @@ function TeamRoster({ teamKey }: { teamKey: "NYK" | "SAS" }) {
   const team = TEAMS[teamKey];
   const starters = playersData[teamKey].starters;
   return (
-    <div className="flex-1">
+    <div>
       <div className="mb-3 flex items-center justify-center gap-2 lg:justify-start">
         <img src={team.logo} alt={`${team.name} logo`} className="h-7 w-7 object-contain" />
         <span className="text-sm font-bold uppercase tracking-wide">{team.name}</span>
-        <span className="text-xs text-muted-foreground">
-          {team.record.w}-{team.record.l}
+        {/* regular season record in parentheses, in solid black */}
+        <span className="text-xs text-black">
+          ({team.record.w}-{team.record.l})
         </span>
       </div>
       <div className="grid grid-cols-5 gap-2 sm:gap-3">
@@ -28,16 +33,14 @@ function TeamRoster({ teamKey }: { teamKey: "NYK" | "SAS" }) {
 
 export function Header() {
   return (
-    <header className="court-grid relative overflow-hidden border-b border-border">
+    <header className="relative overflow-hidden border-b border-border/70">
       {/* soft team colored glows top left and top right for atmosphere */}
       <div className="pointer-events-none absolute -left-24 -top-24 h-72 w-72 rounded-full bg-knicks/15 blur-3xl" />
       <div className="pointer-events-none absolute -right-24 -top-24 h-72 w-72 rounded-full bg-spurs/20 blur-3xl" />
 
       <div className="relative mx-auto max-w-6xl px-5 pb-12 pt-12 md:pt-16">
         <div className="text-center">
-          <p className="eyebrow text-xs text-muted-foreground sm:text-sm">
-            2026 NBA Finals &middot; Prediction Engine
-          </p>
+          <p className="eyebrow text-xs text-black sm:text-sm">2026 NBA Finals Prediction Engine</p>
 
           <div className="mt-3 flex items-center justify-center gap-4 sm:gap-7">
             <img
@@ -47,7 +50,8 @@ export function Header() {
             />
             <h1 className="stat-display text-5xl text-ink sm:text-7xl md:text-8xl">
               <span style={{ color: TEAMS.NYK.color }}>KNICKS</span>
-              <span className="mx-2 text-muted-foreground sm:mx-3">v</span>
+              {/* the v between the team names, in solid black with extra breathing room */}
+              <span className="mx-5 text-black sm:mx-8">v</span>
               <span style={{ color: TEAMS.SAS.color }}>SPURS</span>
             </h1>
             <img
@@ -58,20 +62,26 @@ export function Header() {
           </div>
 
           <p className="mx-auto mt-4 max-w-2xl text-sm text-muted-foreground sm:text-base">
-            Three prediction engines simulate the best of seven Finals. Scroll through each one,
-            then play with injuries and minutes in the last engine to see the series shift.
+            This project uses three different prediction engines to simulate the 2026 NBA Finals
+            between the New York Knicks and San Antonio Spurs. Scroll down to see the results of
+            each prediction engine.
           </p>
         </div>
 
-        <div className="mt-10 flex flex-col gap-8 lg:flex-row lg:items-start lg:gap-6">
+        {/*
+          rosters laid out in three columns on desktop with the vs centered between them. the
+          items-center alignment lands the vs on the headshot row, so it sits between karl-anthony
+          towns and de'aaron fox rather than at the top of the columns.
+        */}
+        <div className="mt-10 grid grid-cols-1 gap-8 lg:grid-cols-[1fr_auto_1fr] lg:items-center lg:gap-6">
           <TeamRoster teamKey="NYK" />
-          <div className="flex items-center justify-center">
-            <span className="stat-display rounded-full border border-border px-4 py-2 text-lg text-muted-foreground">
-              VS
-            </span>
+          <div className="flex justify-center">
+            <span className="stat-display text-3xl text-black sm:text-4xl">VS</span>
           </div>
           <TeamRoster teamKey="SAS" />
         </div>
+
+        <ScrollCue />
       </div>
     </header>
   );
