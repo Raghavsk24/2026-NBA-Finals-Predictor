@@ -8,13 +8,21 @@ import random
  that can also be used to explore what-if scenarios with injuries and minute changes between starters.
 
  The layers are as follows:
-    layer 1: Calculates the team's efficiency using Oliver Dean's four factors: effective field goal percent,
-              turnover rate, offensive rebounding percent and free throw rate.
-    layer 2  Calculates each individual player's efficiency using Oliver Dean's four factors
-    layer 3  a matchup adjustment that adjusts each player's efficiency based on the strength of the defender 
-    layer 4  Each player's predicted minutes, allows adjsutments to visualize how chaning mintues can affect the series.
-    layer 5  a ridge logistic regression that aggregates everything into a win probability, then runs 10,000 monte carlo 
-             simulations to predict each team's probability of winning the series. """
+    layer 1: team four factors. start from each team's season four factors, effective field goal percent,
+             turnover rate, offensive rebound percent and free throw rate, which set the baseline efficiency
+             the rest of the model adjusts.
+    layer 2: player efficiency. score every available player's offense by combining how efficiently he scores
+             (true shooting) with how much of the offense he creates (usage), so a high usage star still
+             matters even when his efficiency is only average. injured players are left out.
+    layer 3: matchup adjustment. lower each player's efficiency by the strength of the defender lined up across
+             from him, read from that defender's defensive rating, steals and blocks, so an elite defender
+             drags his man down.
+    layer 4: minutes. weight every player by his projected minutes inside a fixed pool of starter minutes.
+             injuries and minute changes redistribute that pool, with any shortfall filled by replacement
+             level production, which is what powers the what-if scenarios.
+    layer 5: aggregation. turn the adjusted four factor edges into a single game win probability with a ridge
+             logistic regression, then run 10,000 monte carlo simulations of the best of seven to produce the
+             series odds and length. """
 
 # Writes path to team stats, players, model and output json files
 HERE = os.path.dirname(os.path.abspath(__file__))

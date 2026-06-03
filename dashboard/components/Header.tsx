@@ -40,7 +40,7 @@ export function Header() {
 
       <div className="relative mx-auto max-w-6xl px-5 pb-12 pt-12 md:pt-16">
         <div className="text-center">
-          <p className="eyebrow text-xs text-black sm:text-sm">2026 NBA Finals Prediction Engine</p>
+          <p className="eyebrow text-xs text-muted-foreground sm:text-sm">2026 NBA Finals Prediction Engine</p>
 
           <div className="mt-3 flex items-center justify-center gap-4 sm:gap-7">
             <img
@@ -50,8 +50,8 @@ export function Header() {
             />
             <h1 className="stat-display text-5xl text-ink sm:text-7xl md:text-8xl">
               <span style={{ color: TEAMS.NYK.color }}>KNICKS</span>
-              {/* the vs between the team names, black, a quarter smaller than the names */}
-              <span className="mx-5 text-[0.75em] text-black sm:mx-8">vs.</span>
+              {/* the vs between the team names, muted grey, a quarter smaller than the names */}
+              <span className="mx-5 text-[0.75em] text-muted-foreground sm:mx-8">vs.</span>
               <span style={{ color: TEAMS.SAS.color }}>SPURS</span>
             </h1>
             <img

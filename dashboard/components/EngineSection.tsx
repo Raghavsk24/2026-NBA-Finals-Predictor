@@ -1,7 +1,8 @@
 /*
-  shared frame for each of the three stacked engine sections. it shows the engine number in
-  black in front of the all caps engine name, then a description, then the engine's charts and
-  controls. the section is transparent so the wooden floor backdrop shows through behind it.
+  shared frame for each of the three stacked engine sections. each engine sits on its own white
+  panel, and the wooden floor backdrop shows only in the gaps between panels, so those gaps act
+  as the dividers. the engine number sits as a large ghost figure with the all caps engine name
+  centered vertically next to it.
 */
 
 export function EngineSection({
@@ -18,15 +19,15 @@ export function EngineSection({
   children: React.ReactNode;
 }) {
   return (
-    <section id={id} className="scroll-mt-6 border-b border-border/70">
-      <div className="mx-auto max-w-6xl px-5 py-14 md:py-20">
-        <div className="flex items-baseline gap-3">
-          <span className="stat-display text-4xl text-black md:text-5xl">{number}</span>
+    <section id={id} className="scroll-mt-6 px-4 py-5 md:py-7">
+      <div className="mx-auto max-w-6xl rounded-2xl bg-white px-5 py-12 shadow-sm ring-1 ring-black/5 md:px-10 md:py-16">
+        <div className="flex items-center gap-4">
+          <span className="stat-display select-none text-6xl leading-none text-border md:text-7xl">
+            {number}
+          </span>
           <h2 className="stat-display text-3xl text-ink md:text-4xl">{title}</h2>
         </div>
-        <div className="mt-3 max-w-3xl text-sm text-muted-foreground md:text-base">
-          {description}
-        </div>
+        <div className="mt-4 text-sm text-muted-foreground md:text-base">{description}</div>
         <div className="mt-8">{children}</div>
       </div>
     </section>
