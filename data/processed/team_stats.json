@@ -1,0 +1,35 @@
+{
+  "league_avg_drtg": 114.73,
+  "NYK": {
+    "name": "New York Knicks",
+    "ortg": 118.7,
+    "drtg": 112.3,
+    "pace": 97.71,
+    "efg": 0.557,
+    "tov": 0.139,
+    "oreb": 0.328,
+    "ftr": 0.238,
+    "opp_efg": 0.541,
+    "opp_tov": 0.147,
+    "opp_oreb": 0.285,
+    "opp_ftr": 0.265,
+    "wins": 53,
+    "losses": 29
+  },
+  "SAS": {
+    "name": "San Antonio Spurs",
+    "ortg": 118.7,
+    "drtg": 110.4,
+    "pace": 100.72,
+    "efg": 0.559,
+    "tov": 0.133,
+    "oreb": 0.306,
+    "ftr": 0.274,
+    "opp_efg": 0.522,
+    "opp_tov": 0.128,
+    "opp_oreb": 0.276,
+    "opp_ftr": 0.228,
+    "wins": 62,
+    "losses": 20
+  }
+}

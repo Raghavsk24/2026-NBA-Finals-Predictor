@@ -1,0 +1,40 @@
+{
+  "engine": "Pace-Adjusted Efficiency Model",
+  "simulations": 10000,
+  "expected_pace": 99.22,
+  "expected_score": {
+    "NYK": 113.5,
+    "SAS": 115.4
+  },
+  "per_game": {
+    "nyk_home": 53.4,
+    "nyk_away": 35.4,
+    "sas_home": 64.6,
+    "sas_away": 46.6
+  },
+  "series": {
+    "NYK": 34.8,
+    "SAS": 65.2
+  },
+  "series_length": {
+    "4": 12.6,
+    "5": 26.9,
+    "6": 29.4,
+    "7": 31.0
+  },
+  "inputs": {
+    "NYK": {
+      "name": "New York Knicks",
+      "ortg": 118.7,
+      "drtg": 112.3,
+      "pace": 97.71
+    },
+    "SAS": {
+      "name": "San Antonio Spurs",
+      "ortg": 118.7,
+      "drtg": 110.4,
+      "pace": 100.72
+    },
+    "league_avg_drtg": 114.73
+  }
+}
