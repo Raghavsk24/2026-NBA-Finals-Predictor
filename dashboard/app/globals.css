@@ -1,0 +1,140 @@
+@import "tailwindcss";
+@import "tw-animate-css";
+@import "shadcn/tailwind.css";
+
+@custom-variant dark (&:is(.dark *));
+
+@theme inline {
+  --color-background: var(--background);
+  --color-foreground: var(--foreground);
+  --font-sans: var(--font-hanken);
+  --font-display: var(--font-anton);
+  --font-mono: var(--font-mono-stat);
+
+  /* team colors exposed as utilities, knicks orange and spurs grey */
+  --color-knicks: var(--knicks);
+  --color-knicks-blue: var(--knicks-blue);
+  --color-spurs: var(--spurs);
+  --color-spurs-silver: var(--spurs-silver);
+  --color-ink: var(--ink);
+
+  --color-sidebar-ring: var(--sidebar-ring);
+  --color-sidebar-border: var(--sidebar-border);
+  --color-sidebar-accent-foreground: var(--sidebar-accent-foreground);
+  --color-sidebar-accent: var(--sidebar-accent);
+  --color-sidebar-primary-foreground: var(--sidebar-primary-foreground);
+  --color-sidebar-primary: var(--sidebar-primary);
+  --color-sidebar-foreground: var(--sidebar-foreground);
+  --color-sidebar: var(--sidebar);
+  --color-chart-5: var(--chart-5);
+  --color-chart-4: var(--chart-4);
+  --color-chart-3: var(--chart-3);
+  --color-chart-2: var(--chart-2);
+  --color-chart-1: var(--chart-1);
+  --color-ring: var(--ring);
+  --color-input: var(--input);
+  --color-border: var(--border);
+  --color-destructive: var(--destructive);
+  --color-accent-foreground: var(--accent-foreground);
+  --color-accent: var(--accent);
+  --color-muted-foreground: var(--muted-foreground);
+  --color-muted: var(--muted);
+  --color-secondary-foreground: var(--secondary-foreground);
+  --color-secondary: var(--secondary);
+  --color-primary-foreground: var(--primary-foreground);
+  --color-primary: var(--primary);
+  --color-popover-foreground: var(--popover-foreground);
+  --color-popover: var(--popover);
+  --color-card-foreground: var(--card-foreground);
+  --color-card: var(--card);
+  --radius-sm: calc(var(--radius) * 0.6);
+  --radius-md: calc(var(--radius) * 0.8);
+  --radius-lg: var(--radius);
+  --radius-xl: calc(var(--radius) * 1.4);
+  --radius-2xl: calc(var(--radius) * 1.8);
+}
+
+:root {
+  --radius: 0.5rem;
+
+  /* the brand palette. black text on a white background with team accents */
+  --background: #ffffff;
+  --foreground: #0b0b0c;
+  --ink: #0b0b0c;
+
+  --knicks: #f58426;        /* new york knicks orange */
+  --knicks-blue: #1d6bb6;   /* knicks secondary blue */
+  --spurs: #6e7378;         /* san antonio spurs grey */
+  --spurs-silver: #c4ced4;  /* spurs light silver */
+
+  --card: #ffffff;
+  --card-foreground: #0b0b0c;
+  --popover: #ffffff;
+  --popover-foreground: #0b0b0c;
+
+  --primary: #f58426;
+  --primary-foreground: #ffffff;
+  --secondary: #f4f4f5;
+  --secondary-foreground: #0b0b0c;
+  --muted: #f4f4f5;
+  --muted-foreground: #5c5f66;
+  --accent: #fbeadd;
+  --accent-foreground: #b4540c;
+  --destructive: #d4361f;
+
+  --border: #e6e6e8;
+  --input: #e0e0e3;
+  --ring: #f58426;
+
+  /* chart series, knicks orange first then spurs grey, with supporting tones */
+  --chart-1: #f58426;
+  --chart-2: #6e7378;
+  --chart-3: #1d6bb6;
+  --chart-4: #b8c4cc;
+  --chart-5: #2b2f33;
+
+  --sidebar: #ffffff;
+  --sidebar-foreground: #0b0b0c;
+  --sidebar-primary: #f58426;
+  --sidebar-primary-foreground: #ffffff;
+  --sidebar-accent: #f4f4f5;
+  --sidebar-accent-foreground: #0b0b0c;
+  --sidebar-border: #e6e6e8;
+  --sidebar-ring: #f58426;
+}
+
+@layer base {
+  * {
+    @apply border-border outline-ring/50;
+  }
+  body {
+    @apply bg-background text-foreground;
+  }
+  html {
+    @apply font-sans;
+  }
+}
+
+@layer components {
+  /* big condensed display numerals used for win probabilities and scores */
+  .stat-display {
+    font-family: var(--font-display);
+    font-weight: 400;
+    letter-spacing: 0.01em;
+    font-variant-numeric: tabular-nums;
+    line-height: 0.9;
+  }
+  /* the all caps section eyebrow label */
+  .eyebrow {
+    font-family: var(--font-display);
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+  }
+  /* a faint hardwood court grid used behind hero and section bands */
+  .court-grid {
+    background-image:
+      linear-gradient(to right, rgba(11, 11, 12, 0.045) 1px, transparent 1px),
+      linear-gradient(to bottom, rgba(11, 11, 12, 0.045) 1px, transparent 1px);
+    background-size: 28px 28px;
+  }
+}
