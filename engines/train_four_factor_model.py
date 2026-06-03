@@ -4,12 +4,12 @@ import numpy as np
 from sklearn.linear_model import LogisticRegression
 from sklearn.preprocessing import StandardScaler
 
-# This trains the aggregation model that sits at layer 5 of engine 3. it learns, from every
-# team game this season, how a team's four factor edge over its opponent maps to winning.
-# we use an l2 regularized (ridge) binary logistic regression because it is accurate enough,
-# stays interpretable, and its coefficients export cleanly so the browser can run the same
-# math without a server.
+""" This trains the aggregation model that sits at layer 5 of engine 3. it learns, from every team game this 
+season, how a team's four factor edge over its opponent maps to winning. we use an l2 regularized (ridge) binary 
+logistic regression because it is accurate enough, stays interpretable, and its coefficients export cleanly so 
+the browser can run the same math without a server."""
 
+# Writes path to team stats, players, model and output json files
 HERE = os.path.dirname(os.path.abspath(__file__))
 ROOT = os.path.dirname(HERE)
 PROCESSED = os.path.join(ROOT, "data", "processed")
