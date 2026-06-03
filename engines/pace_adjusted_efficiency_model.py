@@ -5,7 +5,7 @@ from statistics import NormalDist, mean, stdev
 
 """ This is engine 1: the pace-adjusted efficiency model. It is the simplest of the three predictors. 
 It uses only each team's offensive rating, defensive rating and pacing to predict the each team's probability
-of winning the2026 NBA Finals after running 10,000 monte carlo simulations."""
+of winning the 2026 NBA Finals after running 10,000 monte carlo simulations."""
 
 # Writes path to team stats and output json files
 HERE = os.path.dirname(os.path.abspath(__file__))

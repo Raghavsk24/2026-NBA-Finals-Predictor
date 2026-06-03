@@ -3,19 +3,20 @@ import json
 import math
 import random
 
-# This is engine 3, the layered one. it is intentionally the most complex of the three and,
-# as expected, the extra moving parts make it easier to overfit. its real value is that the
-# layers are wired to inputs a user can change in the dashboard (who is injured, how many
-# minutes a player gets) so people can explore how the finals shift.
-#
-# the layers:
-#   layer 1  team four factors efficiency for both teams (oliver dean's four factors)
-#   layer 2  a player efficiency value for every available player (injured players drop out)
-#   layer 3  a matchup adjustment that scales each player by the defender across from them
-#   layer 4  predicted minutes, with injuries and minute changes redistributing to a bench
-#   layer 5  a ridge logistic regression that aggregates everything into a win probability,
-#            then 10,000 monte carlo runs of the best of seven, plus per player stat lines
+"""This is engine 3: the four factor player-impact model. This is the most complex of the three predictors.
+ It layers player-level projections on top of team-level four factors to produce a more granular prediction 
+ that can also be used to explore what-if scenarios with injuries and minute changes between starters.
 
+ The layers are as follows:
+    layer 1: Calculates the team's efficiency using Oliver Dean's four factors: effective field goal percent,
+              turnover rate, offensive rebounding percent and free throw rate.
+    layer 2  Calculates each individual player's efficiency using Oliver Dean's four factors
+    layer 3  a matchup adjustment that adjusts each player's efficiency based on the strength of the defender 
+    layer 4  Each player's predicted minutes, allows adjsutments to visualize how chaning mintues can affect the series.
+    layer 5  a ridge logistic regression that aggregates everything into a win probability, then runs 10,000 monte carlo 
+             simulations to predict each team's probability of winning the series. """
+
+# Writes path to team stats, players, model and output json files
 HERE = os.path.dirname(os.path.abspath(__file__))
 ROOT = os.path.dirname(HERE)
 PROCESSED = os.path.join(ROOT, "data", "processed")
@@ -24,11 +25,11 @@ PLAYERS_PATH = os.path.join(PROCESSED, "players.json")
 MODEL_PATH = os.path.join(PROCESSED, "engine3_model.json")
 OUTPUT_PATH = os.path.join(PROCESSED, "engine3.json")
 
+# Number of Simulations and series schedule constants
 NUM_SIMULATIONS = 10000
 SAS_HOME_BY_GAME = [True, True, False, False, True, False, True]
 
 # constants that tune how strongly the player layers move the team four factors.
-# they are deliberately modest so the default lineup reproduces each team's real season stats.
 LEAGUE_AVG_DRTG = 114.73
 REP_TS = 0.520          # a replacement level scorer's true shooting
 REP_USG = 0.180         # a replacement level usage rate
@@ -42,18 +43,17 @@ MATCHUP_PTS_SENS = 0.55 # how much a strong defender suppresses an attacker's pr
 
 
 def sigmoid(z):
-    # squash a number into a probability between zero and one
+    # sigmoid function that squashes a number into a probability between zero and one
     return 1.0 / (1.0 + math.exp(-z))
 
 
 def defender_strength(defender):
-    # layer 3 helper: turn a defender's metrics into a small positive number where higher is
-    # a tougher defender. it blends defensive rating with steals and blocks.
+    # layer 3 helper: turn a defender's metrics into a small positive number where higher is a tougher defender. 
     if defender is None:
         return 0.0
     rating_part = (LEAGUE_AVG_DRTG - defender["drtg"]) / 100.0
     stocks_part = (defender["stl"] + defender["blk"]) * 0.01
-    return rating_part + stocks_part
+    return rating_part + stocks_part # Combines DRtng with stocks (steals and blocks) to get a single defender strength number
 
 
 def build_matchup_map(players):
@@ -82,10 +82,10 @@ def team_pool(team, injured_names, minutes_overrides):
 
 
 def allocate_minutes(pool, starter_target):
-    # layer 4: conserve a fixed pool of starter minutes. if the active players want more than
-    # the pool we scale everyone down, if they want less the gap is filled by replacement level
-    # minutes. this stops adding or removing a player from inflating a team, a change mostly
-    # redistributes the same minutes rather than inventing new ones.
+    """ layer 4: conserve a fixed pool of starter minutes. if the active players want more than
+     the pool we scale everyone down, if they want less the gap is filled by replacement level
+     minutes. this stops adding or removing a player from inflating a team, a change mostly
+     redistributes the same minutes rather than inventing new ones. """
     desired = sum(minutes for _, minutes in pool)
     if desired > starter_target and desired > 0:
         scale = starter_target / desired
@@ -104,15 +104,12 @@ def matchup_defender(name, defenders, injured_names):
 
 
 def offensive_quality(adj_ts, usg):
-    # layer 2: a player's offensive value combines shooting efficiency with shot creation, so
-    # losing a high usage engine hurts even if his efficiency is only average
+    # layer 2: a player's offensive value combines shooting efficiency with shot creation, solosing a high usage engine hurts even if his efficiency is only average
     return adj_ts + USAGE_BONUS * (usg - USAGE_BASE)
 
 
 def team_indices(alloc, rep_minutes, defenders, injured_names):
-    # layers 2, 3 and 4 combined: a scoring index and a rebounding index for a team. both are
-    # minutes weighted averages, so they describe quality per minute and cannot be inflated by
-    # simply adding another body to the rotation.
+    # layers 2, 3 and 4 combined: a scoring index and a rebounding index for a team
     minute_sum = 0.0
     quality_minutes = 0.0
     reb_minutes = 0.0
@@ -136,17 +133,14 @@ def team_indices(alloc, rep_minutes, defenders, injured_names):
 
 
 def effective_four_factors(team_stats, offense_index, reb_index, base_offense, base_reb):
-    # layer 1 adjusted by the player layers: shift effective efg and oreb away from the season
-    # baseline by how much the current lineup's indices differ from the default lineup's. both
-    # indices are per minute rates, so the shifts stay small and bounded.
+    # layer 1 adjusted by the player layers
     efg = team_stats["efg"] + EFG_SENS * (offense_index - base_offense)
     oreb = team_stats["oreb"] + OREB_SENS * (reb_index - base_reb)
     return {"efg": efg, "tov": team_stats["tov"], "oreb": oreb, "ftr": team_stats["ftr"]}
 
 
 def nyk_game_probability(nyk_factors, sas_factors, model, nyk_home):
-    # layer 5: assemble the four factor edges from the knicks point of view, standardize them
-    # the same way training did, and run the logistic regression to get a single game win odds
+    # layer 5: assemble the four factor edges from the knicks point of view, standardize them the same way training did, and run the logistic regression to get a single game win odds
     efg_diff = nyk_factors["efg"] - sas_factors["efg"]
     tov_diff = sas_factors["tov"] - nyk_factors["tov"]
     oreb_diff = nyk_factors["oreb"] - sas_factors["oreb"]
@@ -177,8 +171,7 @@ def simulate_series(p_nyk_home, p_nyk_away):
 
 
 def player_projections(alloc, defenders, injured_names):
-    # produce a projected finals stat line for each available player, scaled by their allocated
-    # minutes and softened when a healthy defender is assigned to them
+    # produce a projected finals stat line for each available player, scaled by their allocated minutes and softened when a healthy defender is assigned to them
     projections = []
     for p, minutes in alloc:
         min_scale = minutes / p["min"] if p["min"] else 0.0
@@ -243,8 +236,7 @@ def predict(team_stats, players, model, defenders, base, injured, minutes_overri
 
 
 def compute_base(players, defenders):
-    # the default lineup baseline. computing the indices here means the default reproduces each
-    # team's real season four factors exactly, and every change is measured against this point.
+    # the default lineup baseline. computing the indices here means the default reproduces each team's real season four factors exactly, and every change is measured against this point.
     base = {}
     for key in ("NYK", "SAS"):
         starters = players[key]["starters"]

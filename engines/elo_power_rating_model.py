@@ -3,10 +3,11 @@ import json
 import random
 import math
 
-# This is engine 2. It rates every team with an elo system built game by game across the
-# 2025-26 season, then blends that with each finals team's pythagorean expectation (a second
-# signal built from points scored and allowed) to predict the series. elo rewards beating
-# good teams and adjusts for margin of victory, so it carries more signal than engine 1.
+""" This is engine 2: the elo power rating model. It rates every team with an elo system built game by game
+across the 2025-26 season. It then combines that with each finals team's pythagorean expectation (an estimate of
+how many games a team "should win" based on their offesive and defensive ratings) to predict each team's probability
+of winning the series after running 10,000 monte carlo simulations.The elo system is a better metric than engine 1 
+becuase it rewards beating good teams with higher power ratings and it adjusts for margin of victory."""
 
 HERE = os.path.dirname(os.path.abspath(__file__))
 ROOT = os.path.dirname(HERE)
@@ -43,14 +44,12 @@ def win_expectancy(team_elo, opp_elo):
 
 
 def mov_multiplier(point_margin, elo_diff_winner):
-    # margin of victory multiplier so blowouts move the rating more than close games.
-    # the second term dampens the effect when a strong favorite was already expected to win.
+    # margin of victory multiplier so blowouts move the rating more than close games. second term dampens the effect when a strong favorite was already expected to win.
     return math.log(abs(point_margin) + 1.0) * (2.2 / (elo_diff_winner * 0.001 + 2.2))
 
 
 def build_elo(games):
     # walk the whole season in date order and update every team's elo after each game.
-    # also remember the running elo of the two finals teams for the trajectory chart.
     elo = {}
     nyk_traj = []
     sas_traj = []
