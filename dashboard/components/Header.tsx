@@ -33,7 +33,7 @@ function TeamRoster({ teamKey }: { teamKey: "NYK" | "SAS" }) {
 
 export function Header() {
   return (
-    <header className="relative overflow-hidden border-b border-border/70">
+    <header className="relative overflow-hidden">
       {/* soft team colored glows top left and top right for atmosphere */}
       <div className="pointer-events-none absolute -left-24 -top-24 h-72 w-72 rounded-full bg-knicks/15 blur-3xl" />
       <div className="pointer-events-none absolute -right-24 -top-24 h-72 w-72 rounded-full bg-spurs/20 blur-3xl" />
