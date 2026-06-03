@@ -27,7 +27,7 @@ export function EngineSection({
     <section id={id} className={`scroll-mt-6 px-4 ${sectionPadding}`}>
       <div className={`mx-auto max-w-6xl bg-white px-5 shadow-sm ring-1 ring-black/5 md:px-10 ${innerClasses}`}>
         <div className="flex items-center gap-4">
-          <span className="stat-display select-none text-6xl leading-none text-border md:text-7xl">
+          <span className="stat-display select-none text-6xl leading-none text-walnut-honey md:text-7xl">
             {number}
           </span>
           <h2 className="stat-display text-3xl text-ink md:text-4xl">{title}</h2>

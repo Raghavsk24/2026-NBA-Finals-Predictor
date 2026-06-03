@@ -1,8 +1,10 @@
 "use client";
 
-// engine 2 on the dashboard: the elo power rating model. it shows each team's season long elo
-// trajectory and pythagorean win rate, and lets the user reweight how much elo versus
-// pythagorean drives the prediction.
+/*
+  engine 2 on the dashboard: the elo power rating model. it shows each team's season long elo
+  trajectory and pythagorean expectation, and lets the user reweight how much elo versus
+  pythagorean drives the prediction.
+*/
 
 import { useMemo, useState } from "react";
 import { Line, LineChart, Tooltip, XAxis, YAxis, CartesianGrid } from "recharts";
@@ -40,7 +42,6 @@ export function Engine2Section() {
         <Card className="lg:col-span-3 p-6">
           <WinProbabilityBar nyk={result.series.NYK} sas={result.series.SAS} />
           <div className="mt-8">
-            <p className="eyebrow mb-3 text-[11px] text-muted-foreground">how long the series runs</p>
             <SeriesLengthBars data={result.seriesLength} />
           </div>
         </Card>
@@ -50,13 +51,13 @@ export function Engine2Section() {
             <StatTile label="Knicks Elo" value={`${elo.NYK}`} color={TEAMS.NYK.color} sub="final season rating" />
             <StatTile label="Spurs Elo" value={`${elo.SAS}`} color={TEAMS.SAS.color} sub="final season rating" />
             <StatTile
-              label="Knicks Pythag"
+              label="Knicks Pythagorean Expectation"
               value={`${(pyth.NYK.winpct * 100).toFixed(1)}%`}
               color={TEAMS.NYK.color}
               sub="expected win rate"
             />
             <StatTile
-              label="Spurs Pythag"
+              label="Spurs Pythagorean Expectation"
               value={`${(pyth.SAS.winpct * 100).toFixed(1)}%`}
               color={TEAMS.SAS.color}
               sub="expected win rate"
@@ -65,14 +66,14 @@ export function Engine2Section() {
 
           <Card className="p-5">
             <div className="flex items-center justify-between">
-              <p className="eyebrow text-[11px] text-muted-foreground">signal blend</p>
+              <p className="eyebrow text-[11px] text-walnut-honey">Power Rating</p>
               <span className="text-xs font-medium text-muted-foreground">
-                <span className="text-ink">{Math.round(blend * 100)}%</span> Elo /{" "}
-                <span className="text-ink">{Math.round((1 - blend) * 100)}%</span> Pythag
+                <span className="text-ink">{Math.round(blend * 100)}%</span> ELO Rating /{" "}
+                <span className="text-ink">{Math.round((1 - blend) * 100)}%</span> Pythagorean Expectation
               </span>
             </div>
             <Slider
-              className="mt-4"
+              className="mt-4 [&_[data-slot=slider-range]]:bg-walnut-honey [&_[data-slot=slider-thumb]]:border-walnut-honey"
               min={0}
               max={1}
               step={0.05}
@@ -80,18 +81,20 @@ export function Engine2Section() {
               onValueChange={(v) => setBlend(firstNum(v))}
             />
             <p className="mt-3 text-xs text-muted-foreground">
-              Slide toward Elo to trust head to head power ratings, toward Pythagorean to trust
-              points scored and allowed.
+              Slide toward ELO Rating to trust head to head power ratings, toward Pythagorean
+              Expectation to trust points scored and allowed.
             </p>
           </Card>
         </div>
       </div>
 
       <Card className="p-6">
-        <p className="eyebrow mb-4 text-[11px] text-muted-foreground">season elo trajectory</p>
+        <p className="stat-display mb-5 text-center text-2xl text-walnut md:text-3xl">
+          Knicks v Spurs Season Elo Trajectory
+        </p>
         <ChartBox height={256}>
           {(width, height) => (
-            <LineChart width={width} height={height} data={trajectory} margin={{ top: 5, right: 10, left: -10, bottom: 0 }}>
+            <LineChart width={width} height={height} data={trajectory} margin={{ top: 5, right: 14, left: 6, bottom: 4 }}>
               <CartesianGrid stroke="#eee" vertical={false} />
               <XAxis
                 dataKey="game"
@@ -106,7 +109,8 @@ export function Engine2Section() {
                 tickLine={false}
                 axisLine={false}
                 domain={["dataMin - 30", "dataMax + 30"]}
-                width={44}
+                tickFormatter={(v) => `${Math.round(v)}`}
+                width={48}
               />
               <Tooltip
                 contentStyle={{ borderRadius: 8, border: "1px solid #e6e6e8", fontSize: 12 }}
@@ -117,10 +121,9 @@ export function Engine2Section() {
             </LineChart>
           )}
         </ChartBox>
-        <div className="mt-3 flex items-center gap-6 text-xs text-muted-foreground">
+        <div className="mt-3 flex items-center justify-center gap-6 text-xs text-muted-foreground">
           <Legend color={TEAMS.NYK.color} label="Knicks" />
           <Legend color={TEAMS.SAS.color} label="Spurs" />
-          <span>Both teams start the season at 1500.</span>
         </div>
       </Card>
     </div>

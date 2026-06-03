@@ -1,7 +1,10 @@
 "use client";
 
-// the head to head win probability bar shared by all three engines. knicks orange grows from
-// the left, spurs grey from the right, and the split animates whenever the numbers change.
+/*
+  the head to head win probability bar shared by all three engines. knicks orange grows from the
+  left, spurs grey from the right, and the split animates whenever the numbers change. each team
+  carries a pill that reads favorites or underdogs depending on who is ahead.
+*/
 
 import { motion } from "motion/react";
 import { TEAMS } from "@/lib/teams";
@@ -22,7 +25,6 @@ export function WinProbabilityBar({
     <div className="w-full">
       <div className="flex items-end justify-between gap-4">
         <TeamScore teamKey="NYK" value={nyk} leading={nykLeads} align="left" />
-        <span className="eyebrow mb-2 text-[11px] text-muted-foreground">win probability</span>
         <TeamScore teamKey="SAS" value={sas} leading={!nykLeads} align="right" />
       </div>
 
@@ -46,6 +48,8 @@ export function WinProbabilityBar({
         {/* center seam so the split point is always readable */}
         <div className="absolute inset-y-0 left-1/2 w-px -translate-x-1/2 bg-white/60" />
       </div>
+
+      <p className="eyebrow mt-2 text-center text-[11px] text-walnut">Win Probability</p>
     </div>
   );
 }
@@ -67,14 +71,12 @@ function TeamScore({
       <div className={`flex items-center gap-2 ${align === "right" ? "flex-row-reverse" : ""}`}>
         <img src={team.logo} alt={`${team.short} logo`} className="h-6 w-6 object-contain" />
         <span className="text-sm font-semibold tracking-wide">{team.short}</span>
-        {leading && (
-          <span
-            className="rounded-full px-2 py-0.5 text-[10px] font-bold uppercase tracking-wider text-white"
-            style={{ backgroundColor: team.color }}
-          >
-            favored
-          </span>
-        )}
+        <span
+          className="rounded-full px-2 py-0.5 text-[10px] font-bold uppercase tracking-wider text-white"
+          style={{ backgroundColor: team.color }}
+        >
+          {leading ? "Favorites" : "Underdogs"}
+        </span>
       </div>
       <span className="stat-display mt-1 text-5xl" style={{ color: team.color }}>
         {value.toFixed(1)}

@@ -74,7 +74,6 @@ export function Engine3Section() {
         <Card className="lg:col-span-3 p-6">
           <WinProbabilityBar nyk={result.series.NYK} sas={result.series.SAS} />
           <div className="mt-8">
-            <p className="eyebrow mb-3 text-[11px] text-muted-foreground">how long the series runs</p>
             <SeriesLengthBars data={result.seriesLength} />
           </div>
         </Card>
