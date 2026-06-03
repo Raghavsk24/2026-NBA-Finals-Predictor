@@ -38,7 +38,7 @@ export function Engine3Section() {
   const [minutes, setMinutes] = useState<Record<string, number>>({});
 
   const result = useMemo(
-    () => predictLayered(engine3Data, defenders, { injured, minutes }),
+    () => predictLayered(engine3Data, defenders, { injured, minutes }, 10000, 1),
     [injured, minutes]
   );
 

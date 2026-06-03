@@ -44,11 +44,12 @@ export function runEloEngine(
   pythNyk: number,
   pythSas: number,
   blendElo: number,
-  numSims = 10000
+  numSims = 10000,
+  seed = 1
 ): EloResult {
   const pNykHome = perGameNykProb(true, nykElo, sasElo, pythNyk, pythSas, blendElo);
   const pNykAway = perGameNykProb(false, nykElo, sasElo, pythNyk, pythSas, blendElo);
-  const { series, seriesLength } = monteCarlo(pNykHome, pNykAway, numSims);
+  const { series, seriesLength } = monteCarlo(pNykHome, pNykAway, numSims, seed);
 
   return {
     series,

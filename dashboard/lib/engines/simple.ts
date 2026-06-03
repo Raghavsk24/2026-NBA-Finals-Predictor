@@ -54,12 +54,13 @@ export function runSimpleEngine(
   sas: TeamEff,
   leagueAvgDrtg: number,
   homeCourtPoints: number,
-  numSims = 10000
+  numSims = 10000,
+  seed = 1
 ): SimpleResult {
   const pace = expectedPace(nyk, sas);
   const pNykHome = nykWinProbability(nyk, sas, leagueAvgDrtg, homeCourtPoints, true);
   const pNykAway = nykWinProbability(nyk, sas, leagueAvgDrtg, homeCourtPoints, false);
-  const { series, seriesLength } = monteCarlo(pNykHome, pNykAway, numSims);
+  const { series, seriesLength } = monteCarlo(pNykHome, pNykAway, numSims, seed);
 
   return {
     series,

@@ -23,7 +23,7 @@ export function Engine1Section() {
   const [homeCourt, setHomeCourt] = useState(3);
   const [token, setToken] = useState(0);
   const result = useMemo(
-    () => runSimpleEngine(nyk, sas, leagueAvg, homeCourt),
+    () => runSimpleEngine(nyk, sas, leagueAvg, homeCourt, 10000, 1 + token),
     [homeCourt, token]
   );
 

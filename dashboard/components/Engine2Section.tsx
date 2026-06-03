@@ -30,7 +30,7 @@ const trajectory = engine2Data.elo_trajectory.NYK.map((nyk, i) => ({
 export function Engine2Section() {
   const [blend, setBlend] = useState(0.6);
   const result = useMemo(
-    () => runEloEngine(elo.NYK, elo.SAS, pyth.NYK.winpct, pyth.SAS.winpct, blend),
+    () => runEloEngine(elo.NYK, elo.SAS, pyth.NYK.winpct, pyth.SAS.winpct, blend, 10000, 1),
     [blend]
   );
 

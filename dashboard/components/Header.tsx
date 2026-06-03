@@ -50,8 +50,8 @@ export function Header() {
             />
             <h1 className="stat-display text-5xl text-ink sm:text-7xl md:text-8xl">
               <span style={{ color: TEAMS.NYK.color }}>KNICKS</span>
-              {/* the v between the team names, in solid black with extra breathing room */}
-              <span className="mx-5 text-black sm:mx-8">v</span>
+              {/* the vs between the team names, black, a quarter smaller than the names */}
+              <span className="mx-5 text-[0.75em] text-black sm:mx-8">vs.</span>
               <span style={{ color: TEAMS.SAS.color }}>SPURS</span>
             </h1>
             <img
@@ -62,9 +62,9 @@ export function Header() {
           </div>
 
           <p className="mx-auto mt-4 max-w-2xl text-sm text-muted-foreground sm:text-base">
-            This project uses three different prediction engines to simulate the 2026 NBA Finals
-            between the New York Knicks and San Antonio Spurs. Scroll down to see the results of
-            each prediction engine.
+            We use three different prediction engines to simulate the 2026 NBA Finals between the
+            New York Knicks and San Antonio Spurs. Scroll down to see the results of each
+            prediction engine.
           </p>
         </div>
 

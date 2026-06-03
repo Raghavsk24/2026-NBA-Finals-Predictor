@@ -259,7 +259,8 @@ export function predictLayered(
   data: Engine3Data,
   defenders: Record<string, LayeredPlayer>,
   config: LayeredConfig,
-  numSims = 10000
+  numSims = 10000,
+  seed = 1
 ): LayeredResult {
   const c = data.constants;
   const result: Partial<Record<"NYK" | "SAS", { factors: FourFactors; proj: Projection[] }>> = {};
@@ -283,7 +284,7 @@ export function predictLayered(
   const sas = result.SAS!.factors;
   const pNykHome = nykGameProbability(nyk, sas, data.model, true);
   const pNykAway = nykGameProbability(nyk, sas, data.model, false);
-  const { series, seriesLength } = monteCarlo(pNykHome, pNykAway, numSims);
+  const { series, seriesLength } = monteCarlo(pNykHome, pNykAway, numSims, seed);
 
   return {
     series,

@@ -1,12 +1,24 @@
-// the one page dashboard. the three engines stack on top of one another, simplest first, with
-// the interactive engine last.
+/*
+  the one page dashboard. the three engines stack on top of one another, simplest first, with
+  the interactive engine last.
+*/
 
 import { Header } from "@/components/Header";
 import { Footer } from "@/components/Footer";
 import { EngineSection } from "@/components/EngineSection";
+import { LayerList } from "@/components/LayerList";
 import { Engine1Section } from "@/components/Engine1Section";
 import { Engine2Section } from "@/components/Engine2Section";
 import { Engine3Section } from "@/components/Engine3Section";
+
+const ENGINE1_DESC =
+  "This is engine 1: the pace-adjusted efficiency model. It is the simplest of the three predictors. It uses only each team's offensive rating, defensive rating and pacing to predict the each team's probability of winning the 2026 NBA Finals after running 10,000 monte carlo simulations.";
+
+const ENGINE2_DESC =
+  'This is engine 2: the elo power rating model. It rates every team with an elo system built game by game across the 2025-26 season. It then combines that with each finals team\'s pythagorean expectation (an estimate of how many games a team "should win" based on their offesive and defensive ratings) to predict each team\'s probability of winning the series after running 10,000 monte carlo simulations. The elo system is a better metric than engine 1 because it rewards beating good teams with higher power ratings and it adjusts for margin of victory.';
+
+const ENGINE3_DESC =
+  "This is engine 3: the four factor player-impact model. This is the most complex of the three predictors. It layers player-level projections on top of team-level four factors to produce a more granular prediction that can also be used to explore what-if scenarios with injuries and minute changes between starters.";
 
 export default function Home() {
   return (
@@ -16,10 +28,8 @@ export default function Home() {
       <EngineSection
         id="engine-1"
         number="01"
-        tier="Engine 01 . Baseline"
-        title="Pace-Adjusted Efficiency Model"
-        blurb="The simplest engine. It turns each team's offensive rating, defensive rating and pace into an expected score, then plays the best of seven 10,000 times. A clean baseline before the models get more opinionated."
-        badge="10,000 Monte Carlo sims"
+        title="PACE-ADJUSTED EFFICIENCY MODEL"
+        description={<p className="leading-relaxed">{ENGINE1_DESC}</p>}
       >
         <Engine1Section />
       </EngineSection>
@@ -27,10 +37,8 @@ export default function Home() {
       <EngineSection
         id="engine-2"
         number="02"
-        tier="Engine 02 . Power Ratings"
-        title="Elo Power Rating Model"
-        blurb="Every team is rated with an Elo system built game by game across the season, rewarding wins over strong opponents and margin of victory. It is then blended with each team's Pythagorean win expectation from points scored and allowed."
-        badge="Elo + Pythagorean"
+        title="ELO POWER RATING MODEL"
+        description={<p className="leading-relaxed">{ENGINE2_DESC}</p>}
       >
         <Engine2Section />
       </EngineSection>
@@ -38,10 +46,13 @@ export default function Home() {
       <EngineSection
         id="engine-3"
         number="03"
-        tier="Engine 03 . Interactive"
-        title="Four Factor Player-Impact Model"
-        blurb="Five stacked layers: team four factors, a per player efficiency score, the head to head positional matchups, projected minutes, and a ridge logistic regression that ties it together. The most complex and, by design, the most overfit. Built for exploring what ifs."
-        badge="5 layers . live"
+        title="FOUR-FACTOR PLAYER IMPACT"
+        description={
+          <>
+            <p className="leading-relaxed">{ENGINE3_DESC}</p>
+            <LayerList />
+          </>
+        }
       >
         <Engine3Section />
       </EngineSection>

@@ -24,18 +24,33 @@ export function sigmoid(z: number): number {
   return 1 / (1 + Math.exp(-z));
 }
 
-// play a best of seven until a team reaches four wins, given the knicks per game odds at
-// home and on the road. returns the win counts so callers can also track series length.
+/*
+  mulberry32, a tiny seeded pseudo random generator. using a fixed seed makes the monte carlo
+  deterministic, which keeps the server rendered numbers and the client rendered numbers
+  identical (no hydration mismatch) and also stops the odds from flickering on every slider move.
+*/
+export function makeRng(seed: number): () => number {
+  let a = seed >>> 0;
+  return function () {
+    a = (a + 0x6d2b79f5) | 0;
+    let t = Math.imul(a ^ (a >>> 15), 1 | a);
+    t = (t + Math.imul(t ^ (t >>> 7), 61 | t)) ^ t;
+    return ((t ^ (t >>> 14)) >>> 0) / 4294967296;
+  };
+}
+
+// play a best of seven until a team reaches four wins, drawing each game from the given rng
 export function simulateSeries(
   pNykHome: number,
-  pNykAway: number
+  pNykAway: number,
+  rng: () => number
 ): { nyk: number; sas: number } {
   let nyk = 0;
   let sas = 0;
   for (let game = 0; game < 7; game++) {
     const sasHome = SAS_HOME_BY_GAME[game];
     const pNyk = sasHome ? pNykAway : pNykHome;
-    if (Math.random() < pNyk) nyk++;
+    if (rng() < pNyk) nyk++;
     else sas++;
     if (nyk === 4 || sas === 4) break;
   }
@@ -46,12 +61,14 @@ export function simulateSeries(
 export function monteCarlo(
   pNykHome: number,
   pNykAway: number,
-  numSims = 10000
+  numSims = 10000,
+  seed = 1
 ): { series: { NYK: number; SAS: number }; seriesLength: Record<string, number> } {
+  const rng = makeRng(seed);
   let nykWins = 0;
   const lengths: Record<number, number> = { 4: 0, 5: 0, 6: 0, 7: 0 };
   for (let i = 0; i < numSims; i++) {
-    const { nyk, sas } = simulateSeries(pNykHome, pNykAway);
+    const { nyk, sas } = simulateSeries(pNykHome, pNykAway, rng);
     if (nyk === 4) nykWins++;
     lengths[nyk + sas]++;
   }
