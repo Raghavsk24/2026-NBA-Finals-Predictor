@@ -43,22 +43,22 @@ export function Header() {
         <div className="text-center">
           <p className="eyebrow text-xs text-walnut sm:text-sm">2026 NBA Finals Prediction Engine</p>
 
-          <div className="mt-3 flex items-center justify-center gap-4 sm:gap-7">
+          <div className="mt-3 flex items-center justify-center gap-2 sm:gap-7">
             <img
               src={TEAMS.NYK.logo}
               alt="New York Knicks logo"
-              className="h-14 w-14 object-contain sm:h-20 sm:w-20"
+              className="h-10 w-10 shrink-0 object-contain sm:h-20 sm:w-20"
             />
-            <h1 className="stat-display text-5xl text-ink sm:text-7xl md:text-8xl">
+            <h1 className="stat-display text-4xl text-ink sm:text-7xl md:text-8xl">
               <span style={{ color: TEAMS.NYK.color }}>KNICKS</span>
               {/* the vs between the team names, walnut, a quarter smaller than the names */}
-              <span className="mx-5 text-[0.75em] text-walnut sm:mx-8">vs.</span>
+              <span className="mx-2 text-[0.75em] text-walnut sm:mx-8">vs.</span>
               <span style={{ color: TEAMS.SAS.color }}>SPURS</span>
             </h1>
             <img
               src={TEAMS.SAS.logo}
               alt="San Antonio Spurs logo"
-              className="h-14 w-14 object-contain sm:h-20 sm:w-20"
+              className="h-10 w-10 shrink-0 object-contain sm:h-20 sm:w-20"
             />
           </div>
 

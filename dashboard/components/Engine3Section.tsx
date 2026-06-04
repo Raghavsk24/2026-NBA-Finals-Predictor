@@ -74,20 +74,20 @@ export function Engine3Section() {
     <TooltipProvider>
       <div className="flex flex-col gap-6">
         <div className="grid gap-6 lg:grid-cols-5">
-          <Card className="lg:col-span-3 p-6">
+          <Card className="p-4 sm:p-6 lg:col-span-3">
             <WinProbabilityBar nyk={result.series.NYK} sas={result.series.SAS} />
             <div className="mt-8">
               <SeriesLengthBars data={result.seriesLength} />
             </div>
           </Card>
 
-          <Card className="lg:col-span-2 p-6">
+          <Card className="p-4 sm:p-6 lg:col-span-2">
             <p className="eyebrow text-[11px] text-walnut">Four Factor Efficiency</p>
             <FourFactorRadar nyk={result.effectiveFactors.NYK} sas={result.effectiveFactors.SAS} />
           </Card>
         </div>
 
-        <Card className="p-6">
+        <Card className="p-4 sm:p-6">
           <div>
             <p className="stat-display text-2xl text-ink">Roster Lab</p>
             <p className="text-sm text-muted-foreground">
@@ -96,9 +96,10 @@ export function Engine3Section() {
             </p>
           </div>
 
-          <div className="mt-6 grid grid-cols-2 gap-x-4 gap-y-4 sm:gap-x-6">
+          <div className="mt-6 grid grid-cols-1 gap-x-4 gap-y-4 sm:grid-cols-2 sm:gap-x-6">
+            {/* team headers act as the two column headers on larger screens only */}
             {(["NYK", "SAS"] as TeamKey[]).map((key) => (
-              <div key={key} className="flex items-center gap-2">
+              <div key={key} className="hidden items-center gap-2 sm:flex">
                 <img src={TEAMS[key].logo} alt="" className="h-5 w-5 object-contain" />
                 <span className="text-sm font-bold uppercase tracking-wide">{TEAMS[key].name}</span>
               </div>
@@ -189,8 +190,11 @@ function PlayerCard({
               </TooltipContent>
             </Tooltip>
           </div>
-          <div className="text-xs text-muted-foreground">
-            {player.pos} &middot; {(player.usg * 100).toFixed(0)}% usage &middot; Rating {rating}
+          <div className="flex items-center gap-1 text-xs text-muted-foreground">
+            <img src={TEAMS[teamKey].logo} alt="" className="h-3.5 w-3.5 shrink-0 object-contain" />
+            <span>
+              {player.pos} &middot; {(player.usg * 100).toFixed(0)}% usage &middot; Rating {rating}
+            </span>
           </div>
         </div>
         <Switch

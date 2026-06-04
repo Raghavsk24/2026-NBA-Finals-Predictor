@@ -39,7 +39,7 @@ export function Engine2Section() {
   return (
     <div className="flex flex-col gap-6">
       <div className="grid gap-6 lg:grid-cols-5">
-        <Card className="lg:col-span-3 p-6">
+        <Card className="p-4 sm:p-6 lg:col-span-3">
           <WinProbabilityBar nyk={result.series.NYK} sas={result.series.SAS} />
           <div className="mt-8">
             <SeriesLengthBars data={result.seriesLength} />
@@ -64,7 +64,7 @@ export function Engine2Section() {
             />
           </div>
 
-          <Card className="p-5">
+          <Card className="p-4 sm:p-5">
             <div className="flex items-center justify-between">
               <p className="eyebrow text-[11px] text-walnut">Power Rating</p>
               <span className="text-xs font-medium text-muted-foreground">
@@ -88,7 +88,7 @@ export function Engine2Section() {
         </div>
       </div>
 
-      <Card className="p-6">
+      <Card className="p-4 sm:p-6">
         <p className="stat-display mb-5 text-center text-base text-walnut md:text-lg">
           Knicks v Spurs Season Elo Trajectory
         </p>

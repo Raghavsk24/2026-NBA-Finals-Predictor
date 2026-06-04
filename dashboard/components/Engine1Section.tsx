@@ -26,7 +26,7 @@ export function Engine1Section() {
 
   return (
     <div className="grid gap-6 lg:grid-cols-5">
-      <Card className="lg:col-span-3 p-6">
+      <Card className="p-4 sm:p-6 lg:col-span-3">
         <WinProbabilityBar nyk={result.series.NYK} sas={result.series.SAS} />
         <div className="mt-8">
           <SeriesLengthBars data={result.seriesLength} />
@@ -43,7 +43,7 @@ export function Engine1Section() {
           <StatTile label="Pace" value={`${result.expectedPace}`} sub="possessions per game" />
         </div>
 
-        <Card className="p-5">
+        <Card className="p-4 sm:p-5">
           <p className="eyebrow mb-3 text-[11px] text-walnut">Win Probabilities (Home v Away)</p>
           <div className="space-y-2 text-sm">
             <OddsRow color={TEAMS.NYK.color} team="Knicks" home={result.perGame.nykHome} away={result.perGame.nykAway} />
@@ -51,7 +51,7 @@ export function Engine1Section() {
           </div>
         </Card>
 
-        <Card className="p-5">
+        <Card className="p-4 sm:p-5">
           <div className="flex items-center justify-between">
             <p className="eyebrow text-[11px] text-walnut">Home Court Points Boost</p>
             <span className="stat-display text-lg text-ink">+{homeCourt.toFixed(1)} pts</span>

@@ -14,7 +14,7 @@ export function StatTile({
   color?: string;
 }) {
   return (
-    <Card className="p-5">
+    <Card className="p-4 sm:p-5">
       <p className="eyebrow text-[11px] text-walnut">{label}</p>
       <p className="stat-display mt-2 text-3xl" style={{ color: color ?? "var(--ink)" }}>
         {value}

@@ -7,7 +7,7 @@
 */
 
 import { motion } from "motion/react";
-import { TEAMS } from "@/lib/teams";
+import { SPURS_GREY, TEAMS } from "@/lib/teams";
 
 export function WinProbabilityBar({
   nyk,
@@ -23,7 +23,7 @@ export function WinProbabilityBar({
 
   return (
     <div className="w-full">
-      <div className="flex items-end justify-between gap-4">
+      <div className="flex items-end justify-between gap-2 sm:gap-4">
         <TeamScore teamKey="NYK" value={nyk} leading={nykLeads} align="left" />
         <TeamScore teamKey="SAS" value={sas} leading={!nykLeads} align="right" />
       </div>
@@ -33,7 +33,7 @@ export function WinProbabilityBar({
       >
         <motion.div
           className="absolute inset-y-0 left-0"
-          style={{ backgroundColor: TEAMS.NYK.color }}
+          style={{ backgroundColor: SPURS_GREY }}
           initial={false}
           animate={{ width: `${nyk}%` }}
           transition={{ type: "spring", stiffness: 120, damping: 20 }}
@@ -67,20 +67,28 @@ function TeamScore({
 }) {
   const team = TEAMS[teamKey];
   return (
-    <div className={`flex flex-col ${align === "right" ? "items-end" : "items-start"}`}>
-      <div className={`flex items-center gap-2 ${align === "right" ? "flex-row-reverse" : ""}`}>
-        <img src={team.logo} alt={`${team.short} logo`} className="h-6 w-6 object-contain" />
-        <span className="text-sm font-semibold tracking-wide">{team.short}</span>
+    <div className={`flex min-w-0 flex-col ${align === "right" ? "items-end" : "items-start"}`}>
+      <div
+        className={`flex flex-wrap items-center gap-x-1.5 gap-y-1 ${
+          align === "right" ? "flex-row-reverse" : ""
+        }`}
+      >
+        <img
+          src={team.logo}
+          alt={`${team.short} logo`}
+          className="h-5 w-5 shrink-0 object-contain sm:h-6 sm:w-6"
+        />
+        <span className="text-xs font-semibold tracking-wide sm:text-sm">{team.short}</span>
         <span
-          className="rounded-full px-2 py-0.5 text-[10px] font-bold uppercase tracking-wider text-white"
+          className="rounded-full px-1.5 py-0.5 text-[9px] font-bold uppercase tracking-wider text-white sm:px-2 sm:text-[10px]"
           style={{ backgroundColor: team.color }}
         >
           {leading ? "Favorites" : "Underdogs"}
         </span>
       </div>
-      <span className="stat-display mt-1 text-5xl" style={{ color: team.color }}>
+      <span className="stat-display mt-1 text-4xl sm:text-5xl" style={{ color: team.color }}>
         {value.toFixed(1)}
-        <span className="text-2xl">%</span>
+        <span className="text-xl sm:text-2xl">%</span>
       </span>
     </div>
   );
