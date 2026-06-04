@@ -4,7 +4,7 @@
 
 import { useMemo, useState } from "react";
 import { runSimpleEngine, type TeamEff } from "@/lib/engines/simple";
-import { engine1Data } from "@/lib/data";
+import { engine1Data, seriesStart } from "@/lib/data";
 import { TEAMS } from "@/lib/teams";
 import { WinProbabilityBar } from "@/components/WinProbabilityBar";
 import { SeriesLengthBars } from "@/components/SeriesLengthBars";
@@ -20,7 +20,7 @@ const leagueAvg = engine1Data.inputs.league_avg_drtg;
 export function Engine1Section() {
   const [homeCourt, setHomeCourt] = useState(3);
   const result = useMemo(
-    () => runSimpleEngine(nyk, sas, leagueAvg, homeCourt, 10000, 1),
+    () => runSimpleEngine(nyk, sas, leagueAvg, homeCourt, 10000, 1, seriesStart),
     [homeCourt]
   );
 

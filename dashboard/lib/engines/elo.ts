@@ -2,7 +2,7 @@
 // rates are fixed numbers computed in python, so here we only re blend them and re run the
 // monte carlo when the user slides how much to trust elo versus pythagorean.
 
-import { monteCarlo, round1 } from "@/lib/stats";
+import { monteCarlo, round1, type SeriesStart } from "@/lib/stats";
 
 const ELO_HOME_ADVANTAGE = 100.0;
 const PYTH_HOME_BUMP = 0.035;
@@ -45,11 +45,12 @@ export function runEloEngine(
   pythSas: number,
   blendElo: number,
   numSims = 10000,
-  seed = 1
+  seed = 1,
+  start?: SeriesStart
 ): EloResult {
   const pNykHome = perGameNykProb(true, nykElo, sasElo, pythNyk, pythSas, blendElo);
   const pNykAway = perGameNykProb(false, nykElo, sasElo, pythNyk, pythSas, blendElo);
-  const { series, seriesLength } = monteCarlo(pNykHome, pNykAway, numSims, seed);
+  const { series, seriesLength } = monteCarlo(pNykHome, pNykAway, numSims, seed, start);
 
   return {
     series,

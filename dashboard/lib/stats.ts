@@ -39,15 +39,26 @@ export function makeRng(seed: number): () => number {
   };
 }
 
-// play a best of seven until a team reaches four wins, drawing each game from the given rng
+// the current finals standing the simulation should start from, namely each team's wins so far
+// and the index of the next game to play. it defaults to an unplayed series.
+export interface SeriesStart {
+  nyk: number;
+  sas: number;
+  game: number;
+}
+
+const NO_START: SeriesStart = { nyk: 0, sas: 0, game: 0 };
+
+// play out the rest of a best of seven from the current standing, drawing each game from the rng
 export function simulateSeries(
   pNykHome: number,
   pNykAway: number,
-  rng: () => number
+  rng: () => number,
+  start: SeriesStart = NO_START
 ): { nyk: number; sas: number } {
-  let nyk = 0;
-  let sas = 0;
-  for (let game = 0; game < 7; game++) {
+  let nyk = start.nyk;
+  let sas = start.sas;
+  for (let game = start.game; game < 7; game++) {
     const sasHome = SAS_HOME_BY_GAME[game];
     const pNyk = sasHome ? pNykAway : pNykHome;
     if (rng() < pNyk) nyk++;
@@ -62,13 +73,14 @@ export function monteCarlo(
   pNykHome: number,
   pNykAway: number,
   numSims = 10000,
-  seed = 1
+  seed = 1,
+  start: SeriesStart = NO_START
 ): { series: { NYK: number; SAS: number }; seriesLength: Record<string, number> } {
   const rng = makeRng(seed);
   let nykWins = 0;
   const lengths: Record<number, number> = { 4: 0, 5: 0, 6: 0, 7: 0 };
   for (let i = 0; i < numSims; i++) {
-    const { nyk, sas } = simulateSeries(pNykHome, pNykAway, rng);
+    const { nyk, sas } = simulateSeries(pNykHome, pNykAway, rng, start);
     if (nyk === 4) nykWins++;
     lengths[nyk + sas]++;
   }

@@ -2,7 +2,7 @@
 // engines/Simple_Efficiency_Prediction_Model.py so a user can move the home court slider and
 // re run the 10,000 monte carlo simulations live.
 
-import { normalCdf, monteCarlo, round1 } from "@/lib/stats";
+import { normalCdf, monteCarlo, round1, type SeriesStart } from "@/lib/stats";
 
 export interface TeamEff {
   name: string;
@@ -55,12 +55,13 @@ export function runSimpleEngine(
   leagueAvgDrtg: number,
   homeCourtPoints: number,
   numSims = 10000,
-  seed = 1
+  seed = 1,
+  start?: SeriesStart
 ): SimpleResult {
   const pace = expectedPace(nyk, sas);
   const pNykHome = nykWinProbability(nyk, sas, leagueAvgDrtg, homeCourtPoints, true);
   const pNykAway = nykWinProbability(nyk, sas, leagueAvgDrtg, homeCourtPoints, false);
-  const { series, seriesLength } = monteCarlo(pNykHome, pNykAway, numSims, seed);
+  const { series, seriesLength } = monteCarlo(pNykHome, pNykAway, numSims, seed, start);
 
   return {
     series,

@@ -6,6 +6,7 @@
 
 import { RosterCard } from "@/components/RosterCard";
 import { ScrollCue } from "@/components/ScrollCue";
+import { SeriesStatus } from "@/components/SeriesStatus";
 import { playersData } from "@/lib/data";
 import { TEAMS } from "@/lib/teams";
 
@@ -85,6 +86,8 @@ export function Header() {
               </svg>
             </a>
           </p>
+
+          <SeriesStatus />
         </div>
 
         {/*

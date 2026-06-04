@@ -189,6 +189,73 @@ def collect_four_factor_games():
     return rows
 
 
+def collect_finals_games():
+    # the finals games between the knicks and the spurs that have already been played. we pull the
+    # postseason log and keep only the games where both finals teams appear, which leaves the finals
+    rows = retry_fetch(
+        "finals_game_log",
+        lambda t: leaguegamelog.LeagueGameLog(
+            season=SEASON, season_type_all_star="Playoffs", timeout=t
+        ),
+    )
+    if not rows:
+        return []
+
+    by_game = {}
+    for r in rows:
+        if r.get("TEAM_ID") in (NYK_ID, SAS_ID):
+            by_game.setdefault(r["GAME_ID"], []).append(r)
+
+    finals = []
+    for gid, pair in by_game.items():
+        if len(pair) != 2:
+            continue
+        home = next((p for p in pair if "vs." in p["MATCHUP"]), pair[0])
+        away = pair[1] if home is pair[0] else pair[0]
+        finals.append({
+            "game_id": gid,
+            "date": home["GAME_DATE"],
+            "home_id": home["TEAM_ID"],
+            "home_abbr": home["TEAM_ABBREVIATION"],
+            "home_pts": home["PTS"],
+            "away_id": away["TEAM_ID"],
+            "away_abbr": away["TEAM_ABBREVIATION"],
+            "away_pts": away["PTS"],
+            "home_win": 1 if home["WL"] == "W" else 0,
+        })
+    finals.sort(key=lambda g: g["date"])
+    return finals
+
+
+def build_series(finals):
+    # turn the played finals games into the current series standing plus a small display record
+    nyk_wins = sas_wins = 0
+    display = []
+    for i, g in enumerate(finals):
+        nyk_pts = g["home_pts"] if g["home_id"] == NYK_ID else g["away_pts"]
+        sas_pts = g["home_pts"] if g["home_id"] == SAS_ID else g["away_pts"]
+        winner = "NYK" if nyk_pts > sas_pts else "SAS"
+        if winner == "NYK":
+            nyk_wins += 1
+        else:
+            sas_wins += 1
+        display.append({
+            "game": i + 1,
+            "home": "SAS" if g["home_id"] == SAS_ID else "NYK",
+            "nyk": nyk_pts,
+            "sas": sas_pts,
+            "winner": winner,
+        })
+    return {
+        "nyk_wins": nyk_wins,
+        "sas_wins": sas_wins,
+        "games_played": len(finals),
+        "next_game_index": len(finals),
+        "games": finals,
+        "display": display,
+    }
+
+
 def collect_roster(team_id, label):
     # the active roster for a team so we have real player ids for headshots
     rows = retry_fetch(
@@ -282,6 +349,9 @@ def main():
     print("collecting per game four factors...")
     four_factor_games = collect_four_factor_games()
 
+    print("collecting finals games played so far...")
+    series = build_series(collect_finals_games())
+
     print("collecting rosters...")
     nyk_roster = collect_roster(NYK_ID, "nyk")
     sas_roster = collect_roster(SAS_ID, "sas")
@@ -327,6 +397,7 @@ def main():
         write_json(os.path.join(PROCESSED_DIR, "games.json"), games)
     if four_factor_games:
         write_json(os.path.join(PROCESSED_DIR, "four_factor_games.json"), four_factor_games)
+    write_json(os.path.join(PROCESSED_DIR, "series.json"), series)
 
     print()
     print("done. team_stats and players are ready in", PROCESSED_DIR)

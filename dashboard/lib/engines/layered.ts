@@ -3,7 +3,7 @@
 // live as the user injures players or changes their minutes. the exported base indices from
 // python are reused so the default lineup here lands on the exact same numbers.
 
-import { sigmoid, monteCarlo, round1 } from "@/lib/stats";
+import { sigmoid, monteCarlo, round1, type SeriesStart } from "@/lib/stats";
 
 export interface LayeredPlayer {
   name: string;
@@ -264,7 +264,8 @@ export function predictLayered(
   defenders: Record<string, LayeredPlayer>,
   config: LayeredConfig,
   numSims = 10000,
-  seed = 1
+  seed = 1,
+  start?: SeriesStart
 ): LayeredResult {
   const c = data.constants;
   const result: Partial<Record<"NYK" | "SAS", { factors: FourFactors; proj: Projection[] }>> = {};
@@ -288,7 +289,7 @@ export function predictLayered(
   const sas = result.SAS!.factors;
   const pNykHome = nykGameProbability(nyk, sas, data.model, true);
   const pNykAway = nykGameProbability(nyk, sas, data.model, false);
-  const { series, seriesLength } = monteCarlo(pNykHome, pNykAway, numSims, seed);
+  const { series, seriesLength } = monteCarlo(pNykHome, pNykAway, numSims, seed, start);
 
   return {
     series,

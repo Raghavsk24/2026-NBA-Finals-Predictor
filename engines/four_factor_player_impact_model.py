@@ -32,6 +32,7 @@ TEAM_STATS_PATH = os.path.join(PROCESSED, "team_stats.json")
 PLAYERS_PATH = os.path.join(PROCESSED, "players.json")
 MODEL_PATH = os.path.join(PROCESSED, "engine3_model.json")
 OUTPUT_PATH = os.path.join(PROCESSED, "engine3.json")
+SERIES_PATH = os.path.join(PROCESSED, "series.json")
 
 # Number of Simulations and series schedule constants
 NUM_SIMULATIONS = 10000
@@ -163,10 +164,18 @@ def nyk_game_probability(nyk_factors, sas_factors, model, nyk_home):
     return sigmoid(logit)
 
 
-def simulate_series(p_nyk_home, p_nyk_away):
-    # run the best of seven with the 2-2-1-1-1 venue pattern until a team gets to four wins
-    nyk_wins = sas_wins = 0
-    for game_index in range(7):
+def load_series():
+    # the finals games already played, with the current standing and the next game to play
+    if os.path.exists(SERIES_PATH):
+        with open(SERIES_PATH, "r", encoding="utf-8") as f:
+            return json.load(f)
+    return {"nyk_wins": 0, "sas_wins": 0, "next_game_index": 0}
+
+
+def simulate_series(p_nyk_home, p_nyk_away, start_nyk=0, start_sas=0, start_game=0):
+    # play out the rest of the series from the current standing until a team gets to four wins
+    nyk_wins, sas_wins = start_nyk, start_sas
+    for game_index in range(start_game, 7):
         sas_home = SAS_HOME_BY_GAME[game_index]
         p_nyk = p_nyk_away if sas_home else p_nyk_home
         if random.random() < p_nyk:
@@ -213,10 +222,15 @@ def predict(team_stats, players, model, defenders, base, injured, minutes_overri
     p_nyk_home = nyk_game_probability(nyk_factors, sas_factors, model, True)
     p_nyk_away = nyk_game_probability(nyk_factors, sas_factors, model, False)
 
+    series = load_series()
+    start_nyk = series.get("nyk_wins", 0)
+    start_sas = series.get("sas_wins", 0)
+    start_game = series.get("next_game_index", 0)
+
     nyk_series_wins = 0
     series_length_counts = {4: 0, 5: 0, 6: 0, 7: 0}
     for _ in range(NUM_SIMULATIONS):
-        nyk_w, sas_w = simulate_series(p_nyk_home, p_nyk_away)
+        nyk_w, sas_w = simulate_series(p_nyk_home, p_nyk_away, start_nyk, start_sas, start_game)
         if nyk_w == 4:
             nyk_series_wins += 1
         series_length_counts[nyk_w + sas_w] += 1

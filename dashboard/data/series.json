@@ -1,0 +1,28 @@
+{
+  "nyk_wins": 1,
+  "sas_wins": 0,
+  "games_played": 1,
+  "next_game_index": 1,
+  "games": [
+    {
+      "game_id": "0042500401",
+      "date": "2026-06-03",
+      "home_id": 1610612759,
+      "home_abbr": "SAS",
+      "home_pts": 95,
+      "away_id": 1610612752,
+      "away_abbr": "NYK",
+      "away_pts": 105,
+      "home_win": 0
+    }
+  ],
+  "display": [
+    {
+      "game": 1,
+      "home": "SAS",
+      "nyk": 105,
+      "sas": 95,
+      "winner": "NYK"
+    }
+  ]
+}

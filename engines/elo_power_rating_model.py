@@ -15,6 +15,7 @@ PROCESSED = os.path.join(ROOT, "data", "processed")
 GAMES_PATH = os.path.join(PROCESSED, "games.json")
 TEAM_STATS_PATH = os.path.join(PROCESSED, "team_stats.json")
 OUTPUT_PATH = os.path.join(PROCESSED, "engine2.json")
+SERIES_PATH = os.path.join(PROCESSED, "series.json")
 
 NYK_ID = 1610612752
 SAS_ID = 1610612759
@@ -122,10 +123,18 @@ def per_game_nyk_prob(nyk_home, nyk_elo, sas_elo, pyth):
     return BLEND_ELO * elo_p + BLEND_PYTH * pyth_p
 
 
-def simulate_series(p_nyk_home, p_nyk_away):
-    # play the best of seven with the right venue each game until a team reaches four wins
-    nyk_wins = sas_wins = 0
-    for game_index in range(7):
+def load_series():
+    # load the finals games already played, with the current standing and the next game to play
+    if os.path.exists(SERIES_PATH):
+        with open(SERIES_PATH, "r", encoding="utf-8") as f:
+            return json.load(f)
+    return {"nyk_wins": 0, "sas_wins": 0, "next_game_index": 0, "games": []}
+
+
+def simulate_series(p_nyk_home, p_nyk_away, start_nyk=0, start_sas=0, start_game=0):
+    # play out the rest of the best of seven from the current standing until a team reaches four wins
+    nyk_wins, sas_wins = start_nyk, start_sas
+    for game_index in range(start_game, 7):
         sas_home = SAS_HOME_BY_GAME[game_index]
         p_nyk = p_nyk_away if sas_home else p_nyk_home
         if random.random() < p_nyk:
@@ -148,7 +157,11 @@ def run():
     with open(TEAM_STATS_PATH, "r", encoding="utf-8") as f:
         team_stats = json.load(f)
 
+    # fold any finals games already played into the season so elo and pythagorean reflect them
+    series = load_series()
+
     if games:
+        games = games + series.get("games", [])
         elo, nyk_traj, sas_traj = build_elo(games)
         nyk_elo = round(elo[NYK_ID], 1)
         sas_elo = round(elo[SAS_ID], 1)
@@ -166,10 +179,14 @@ def run():
     p_nyk_home = per_game_nyk_prob(True, nyk_elo, sas_elo, pyth)
     p_nyk_away = per_game_nyk_prob(False, nyk_elo, sas_elo, pyth)
 
+    start_nyk = series.get("nyk_wins", 0)
+    start_sas = series.get("sas_wins", 0)
+    start_game = series.get("next_game_index", 0)
+
     nyk_series_wins = 0
     series_length_counts = {4: 0, 5: 0, 6: 0, 7: 0}
     for _ in range(NUM_SIMULATIONS):
-        nyk_w, sas_w = simulate_series(p_nyk_home, p_nyk_away)
+        nyk_w, sas_w = simulate_series(p_nyk_home, p_nyk_away, start_nyk, start_sas, start_game)
         if nyk_w == 4:
             nyk_series_wins += 1
         series_length_counts[nyk_w + sas_w] += 1
@@ -178,6 +195,7 @@ def run():
     return {
         "engine": "Elo Power Rating Model",
         "simulations": NUM_SIMULATIONS,
+        "series_state": {"nyk_wins": start_nyk, "sas_wins": start_sas},
         "elo": {"NYK": nyk_elo, "SAS": sas_elo, "start": ELO_START},
         "elo_trajectory": {"NYK": nyk_traj, "SAS": sas_traj},
         "pythagorean": pyth,

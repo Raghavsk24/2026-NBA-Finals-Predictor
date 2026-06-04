@@ -5,7 +5,9 @@ import engine1 from "@/data/engine1.json";
 import engine2 from "@/data/engine2.json";
 import engine3 from "@/data/engine3.json";
 import players from "@/data/players.json";
+import series from "@/data/series.json";
 import type { Engine3Data } from "@/lib/engines/layered";
+import type { SeriesStart } from "@/lib/stats";
 
 export interface SeriesOdds {
   NYK: number;
@@ -70,7 +72,31 @@ export interface PlayersData {
   matchups: { pos: string; nyk: string; sas: string }[];
 }
 
+export interface SeriesGame {
+  game: number;
+  home: string;
+  nyk: number;
+  sas: number;
+  winner: string;
+}
+
+export interface SeriesData {
+  nyk_wins: number;
+  sas_wins: number;
+  games_played: number;
+  next_game_index: number;
+  display: SeriesGame[];
+}
+
 export const engine1Data = engine1 as unknown as Engine1Data;
 export const engine2Data = engine2 as unknown as Engine2Data;
 export const engine3Data = engine3 as unknown as Engine3Data;
 export const playersData = players as unknown as PlayersData;
+export const seriesData = series as unknown as SeriesData;
+
+// the standing the dashboard simulations start from, so every engine continues the live series
+export const seriesStart: SeriesStart = {
+  nyk: seriesData.nyk_wins,
+  sas: seriesData.sas_wins,
+  game: seriesData.next_game_index,
+};

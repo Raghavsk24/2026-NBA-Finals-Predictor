@@ -15,7 +15,7 @@ import {
   type LayeredPlayer,
   type Projection,
 } from "@/lib/engines/layered";
-import { engine3Data } from "@/lib/data";
+import { engine3Data, seriesStart } from "@/lib/data";
 import { TEAMS, type TeamKey } from "@/lib/teams";
 import { WinProbabilityBar } from "@/components/WinProbabilityBar";
 import { SeriesLengthBars } from "@/components/SeriesLengthBars";
@@ -47,7 +47,7 @@ export function Engine3Section() {
   const [minutes, setMinutes] = useState<Record<string, number>>({});
 
   const result = useMemo(
-    () => predictLayered(engine3Data, defenders, { injured, minutes }, 10000, 1),
+    () => predictLayered(engine3Data, defenders, { injured, minutes }, 10000, 1, seriesStart),
     [injured, minutes]
   );
 

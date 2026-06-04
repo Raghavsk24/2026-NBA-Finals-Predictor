@@ -9,7 +9,7 @@
 import { useMemo, useState } from "react";
 import { Line, LineChart, Tooltip, XAxis, YAxis, CartesianGrid } from "recharts";
 import { runEloEngine } from "@/lib/engines/elo";
-import { engine2Data } from "@/lib/data";
+import { engine2Data, seriesStart } from "@/lib/data";
 import { TEAMS } from "@/lib/teams";
 import { WinProbabilityBar } from "@/components/WinProbabilityBar";
 import { SeriesLengthBars } from "@/components/SeriesLengthBars";
@@ -32,7 +32,7 @@ const trajectory = engine2Data.elo_trajectory.NYK.map((nyk, i) => ({
 export function Engine2Section() {
   const [blend, setBlend] = useState(0.6);
   const result = useMemo(
-    () => runEloEngine(elo.NYK, elo.SAS, pyth.NYK.winpct, pyth.SAS.winpct, blend, 10000, 1),
+    () => runEloEngine(elo.NYK, elo.SAS, pyth.NYK.winpct, pyth.SAS.winpct, blend, 10000, 1, seriesStart),
     [blend]
   );
 
