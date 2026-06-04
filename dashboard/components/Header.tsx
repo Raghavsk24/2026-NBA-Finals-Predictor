@@ -63,8 +63,27 @@ export function Header() {
 
           <p className="mx-auto mt-4 max-w-2xl text-sm text-muted-foreground sm:text-base">
             We use three different prediction engines to simulate the 2026 NBA Finals between the
-            New York Knicks and San Antonio Spurs. Scroll down to see the results of each
-            prediction engine.
+            New York Knicks and San Antonio Spurs. See how we created prediction models on{" "}
+            <a
+              href="https://medium.com/@senthilkumaraghav/week-2-of-13-predicting-the-2026-nba-finals-194bdfdb1530"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="inline-flex items-center gap-0.5 font-medium text-knicks underline underline-offset-2 hover:text-knicks-blue"
+            >
+              Medium
+              <svg
+                viewBox="0 0 24 24"
+                fill="none"
+                stroke="currentColor"
+                strokeWidth="2"
+                strokeLinecap="round"
+                strokeLinejoin="round"
+                className="h-3.5 w-3.5"
+                aria-hidden="true"
+              >
+                <path d="M7 17 17 7M7 7h10v10" />
+              </svg>
+            </a>
           </p>
         </div>
 

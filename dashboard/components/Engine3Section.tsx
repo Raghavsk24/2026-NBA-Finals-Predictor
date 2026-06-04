@@ -218,6 +218,11 @@ function PlayerCard({
               step={1}
               value={[minutesValue]}
               onValueChange={(v) => onMinutes(firstNum(v))}
+              className={
+                teamKey === "SAS"
+                  ? "[&_[data-slot=slider-range]]:bg-spurs [&_[data-slot=slider-thumb]]:border-spurs"
+                  : undefined
+              }
             />
             <span className="stat-display w-7 text-right text-base text-ink">
               {Math.round(minutesValue)}
