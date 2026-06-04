@@ -250,9 +250,13 @@ def build_player(name, pos, fallback_id, base, adv, roster_rows, fallback_line=N
         record["ast"] = round(b.get("AST", record["ast"]), 1)
         record["stl"] = round(b.get("STL", record["stl"]), 2)
         record["blk"] = round(b.get("BLK", record["blk"]), 2)
-        # free throw rate is free throw attempts over field goal attempts
+        # free throw rate is free throw attempts over field goal attempts, and turnover rate is
+        # turnovers over the player's estimated possessions used, both kept as clean fractions
         if b.get("FGA"):
             record["ftr"] = round(b["FTA"] / b["FGA"], 3)
+            possessions = b["FGA"] + 0.44 * b.get("FTA", 0) + b.get("TOV", 0)
+            if possessions:
+                record["tov"] = round(b.get("TOV", 0) / possessions, 3)
 
     a = None
     if adv:
@@ -263,7 +267,6 @@ def build_player(name, pos, fallback_id, base, adv, roster_rows, fallback_line=N
         record["drtg"] = round(a.get("DEF_RATING", record["drtg"]), 1)
         record["dreb_pct"] = round(a.get("DREB_PCT", record["dreb_pct"]), 3)
         record["efg"] = round(a.get("EFG_PCT", record["efg"]), 3)
-        record["tov"] = round(a.get("TM_TOV_PCT", record["tov"]), 3)
         record["oreb"] = round(a.get("OREB_PCT", record["oreb"]), 3)
     return record
 

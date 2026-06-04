@@ -26,6 +26,7 @@ import { Slider } from "@/components/ui/slider";
 import { Switch } from "@/components/ui/switch";
 import { Badge } from "@/components/ui/badge";
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip";
+import { fourFactorScores, PLAYER_BANDS } from "@/lib/fourfactors";
 import { firstNum } from "@/lib/utils";
 
 const defenders = buildDefenders(engine3Data);
@@ -83,10 +84,6 @@ export function Engine3Section() {
           <Card className="lg:col-span-2 p-6">
             <p className="eyebrow text-[11px] text-walnut">Four Factor Efficiency</p>
             <FourFactorRadar nyk={result.effectiveFactors.NYK} sas={result.effectiveFactors.SAS} />
-            <div className="mt-1 flex items-center justify-center gap-6 text-xs text-muted-foreground">
-              <Legend color={TEAMS.NYK.color} label="Knicks" />
-              <Legend color={TEAMS.SAS.color} label="Spurs" />
-            </div>
           </Card>
         </div>
 
@@ -114,6 +111,7 @@ export function Engine3Section() {
                 <Fragment key={pos}>
                   <PlayerCard
                     player={nykP}
+                    teamKey="NYK"
                     teamColor={TEAMS.NYK.color}
                     injured={injured.has(nykP.name)}
                     minutesValue={nykP.name in minutes ? minutes[nykP.name] : nykP.min}
@@ -123,6 +121,7 @@ export function Engine3Section() {
                   />
                   <PlayerCard
                     player={sasP}
+                    teamKey="SAS"
                     teamColor={TEAMS.SAS.color}
                     injured={injured.has(sasP.name)}
                     minutesValue={sasP.name in minutes ? minutes[sasP.name] : sasP.min}
@@ -142,6 +141,7 @@ export function Engine3Section() {
 
 function PlayerCard({
   player,
+  teamKey,
   teamColor,
   injured,
   minutesValue,
@@ -150,6 +150,7 @@ function PlayerCard({
   onMinutes,
 }: {
   player: LayeredPlayer;
+  teamKey: TeamKey;
   teamColor: string;
   injured: boolean;
   minutesValue: number;
@@ -157,6 +158,7 @@ function PlayerCard({
   onToggle: (healthy: boolean) => void;
   onMinutes: (m: number) => void;
 }) {
+  const rating = fourFactorScores(player.efg, player.tov, player.oreb, player.ftr, PLAYER_BANDS).rating;
   return (
     <div
       className={`rounded-xl border p-3 transition-opacity ${injured ? "opacity-55" : ""}`}
@@ -188,10 +190,15 @@ function PlayerCard({
             </Tooltip>
           </div>
           <div className="text-xs text-muted-foreground">
-            {player.pos} &middot; {(player.usg * 100).toFixed(0)}% usage
+            {player.pos} &middot; {(player.usg * 100).toFixed(0)}% usage &middot; Rating {rating}
           </div>
         </div>
-        <Switch checked={!injured} onCheckedChange={onToggle} aria-label={`${player.name} healthy`} />
+        <Switch
+          checked={!injured}
+          onCheckedChange={onToggle}
+          aria-label={`${player.name} healthy`}
+          className={teamKey === "SAS" ? "data-checked:bg-spurs" : undefined}
+        />
       </div>
 
       {injured ? (
@@ -240,11 +247,3 @@ function ProjStat({ label, value, color }: { label: string; value: number; color
   );
 }
 
-function Legend({ color, label }: { color: string; label: string }) {
-  return (
-    <span className="flex items-center gap-2">
-      <span className="h-2.5 w-5 rounded-full" style={{ backgroundColor: color }} />
-      {label}
-    </span>
-  );
-}
