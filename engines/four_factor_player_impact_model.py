@@ -1,7 +1,8 @@
 import os
 import json
 import math
-import random
+
+from engine_common import NUM_SIMULATIONS, SAS_HOME_BY_GAME, load_series, run_series_monte_carlo
 
 """This is engine 3: the four factor player-impact model. This is the most complex of the three predictors.
  It layers player-level projections on top of team-level four factors to produce a more granular prediction 
@@ -32,11 +33,6 @@ TEAM_STATS_PATH = os.path.join(PROCESSED, "team_stats.json")
 PLAYERS_PATH = os.path.join(PROCESSED, "players.json")
 MODEL_PATH = os.path.join(PROCESSED, "engine3_model.json")
 OUTPUT_PATH = os.path.join(PROCESSED, "engine3.json")
-SERIES_PATH = os.path.join(PROCESSED, "series.json")
-
-# Number of Simulations and series schedule constants
-NUM_SIMULATIONS = 10000
-SAS_HOME_BY_GAME = [True, True, False, False, True, False, True]
 
 # constants that tune how strongly the player layers move the team four factors.
 LEAGUE_AVG_DRTG = 114.73
@@ -164,29 +160,6 @@ def nyk_game_probability(nyk_factors, sas_factors, model, nyk_home):
     return sigmoid(logit)
 
 
-def load_series():
-    # the finals games already played, with the current standing and the next game to play
-    if os.path.exists(SERIES_PATH):
-        with open(SERIES_PATH, "r", encoding="utf-8") as f:
-            return json.load(f)
-    return {"nyk_wins": 0, "sas_wins": 0, "next_game_index": 0}
-
-
-def simulate_series(p_nyk_home, p_nyk_away, start_nyk=0, start_sas=0, start_game=0):
-    # play out the rest of the series from the current standing until a team gets to four wins
-    nyk_wins, sas_wins = start_nyk, start_sas
-    for game_index in range(start_game, 7):
-        sas_home = SAS_HOME_BY_GAME[game_index]
-        p_nyk = p_nyk_away if sas_home else p_nyk_home
-        if random.random() < p_nyk:
-            nyk_wins += 1
-        else:
-            sas_wins += 1
-        if nyk_wins == 4 or sas_wins == 4:
-            break
-    return nyk_wins, sas_wins
-
-
 def player_projections(alloc, defenders, injured_names):
     # produce a projected finals stat line for each available player, scaled by their allocated minutes and softened when a healthy defender is assigned to them
     projections = []
@@ -222,30 +195,16 @@ def predict(team_stats, players, model, defenders, base, injured, minutes_overri
     p_nyk_home = nyk_game_probability(nyk_factors, sas_factors, model, True)
     p_nyk_away = nyk_game_probability(nyk_factors, sas_factors, model, False)
 
-    series = load_series()
-    start_nyk = series.get("nyk_wins", 0)
-    start_sas = series.get("sas_wins", 0)
-    start_game = series.get("next_game_index", 0)
+    # play out the series from the current standing with the shared monte carlo
+    monte_carlo = run_series_monte_carlo(p_nyk_home, p_nyk_away, load_series())
 
-    nyk_series_wins = 0
-    series_length_counts = {4: 0, 5: 0, 6: 0, 7: 0}
-    for _ in range(NUM_SIMULATIONS):
-        nyk_w, sas_w = simulate_series(p_nyk_home, p_nyk_away, start_nyk, start_sas, start_game)
-        if nyk_w == 4:
-            nyk_series_wins += 1
-        series_length_counts[nyk_w + sas_w] += 1
-
-    nyk_pct = nyk_series_wins / NUM_SIMULATIONS * 100
     return {
-        "series": {"NYK": round(nyk_pct, 1), "SAS": round(100 - nyk_pct, 1)},
+        "series": monte_carlo["series"],
         "per_game": {
             "nyk_home": round(p_nyk_home * 100, 1),
             "nyk_away": round(p_nyk_away * 100, 1),
         },
-        "series_length": {
-            str(length): round(series_length_counts[length] / NUM_SIMULATIONS * 100, 1)
-            for length in (4, 5, 6, 7)
-        },
+        "series_length": monte_carlo["series_length"],
         "effective_factors": {
             "NYK": {k: round(v, 4) for k, v in nyk_factors.items()},
             "SAS": {k: round(v, 4) for k, v in sas_factors.items()},

@@ -1,7 +1,8 @@
 import os
 import json
-import random
 import math
+
+from engine_common import NYK_ID, SAS_ID, NUM_SIMULATIONS, load_series, run_series_monte_carlo
 
 """ This is engine 2: the elo power rating model. It rates every team with an elo system built game by game
 across the 2025-26 season. It then combines that with each finals team's pythagorean expectation (an estimate of
@@ -15,10 +16,6 @@ PROCESSED = os.path.join(ROOT, "data", "processed")
 GAMES_PATH = os.path.join(PROCESSED, "games.json")
 TEAM_STATS_PATH = os.path.join(PROCESSED, "team_stats.json")
 OUTPUT_PATH = os.path.join(PROCESSED, "engine2.json")
-SERIES_PATH = os.path.join(PROCESSED, "series.json")
-
-NYK_ID = 1610612752
-SAS_ID = 1610612759
 
 # elo settings: standard starting rating, a k factor and a home court bump in elo points
 ELO_START = 1500.0
@@ -32,11 +29,6 @@ PYTH_HOME_BUMP = 0.035
 # how much we trust elo versus pythagorean when blending the per-game probability
 BLEND_ELO = 0.6
 BLEND_PYTH = 0.4
-
-NUM_SIMULATIONS = 10000
-
-# Series venue by game: Games 1, 2, 5, 7 in San Antonio; Games 3, 4, 6 in New York
-SAS_HOME_BY_GAME = [True, True, False, False, True, False, True]
 
 
 def win_expectancy(team_elo, opp_elo):
@@ -123,29 +115,6 @@ def per_game_nyk_prob(nyk_home, nyk_elo, sas_elo, pyth):
     return BLEND_ELO * elo_p + BLEND_PYTH * pyth_p
 
 
-def load_series():
-    # load the finals games already played, with the current standing and the next game to play
-    if os.path.exists(SERIES_PATH):
-        with open(SERIES_PATH, "r", encoding="utf-8") as f:
-            return json.load(f)
-    return {"nyk_wins": 0, "sas_wins": 0, "next_game_index": 0, "games": []}
-
-
-def simulate_series(p_nyk_home, p_nyk_away, start_nyk=0, start_sas=0, start_game=0):
-    # play out the rest of the best of seven from the current standing until a team reaches four wins
-    nyk_wins, sas_wins = start_nyk, start_sas
-    for game_index in range(start_game, 7):
-        sas_home = SAS_HOME_BY_GAME[game_index]
-        p_nyk = p_nyk_away if sas_home else p_nyk_home
-        if random.random() < p_nyk:
-            nyk_wins += 1
-        else:
-            sas_wins += 1
-        if nyk_wins == 4 or sas_wins == 4:
-            break
-    return nyk_wins, sas_wins
-
-
 def run():
     # load the season games, fall back to team stats if for some reason games are missing
     if os.path.exists(GAMES_PATH):
@@ -179,23 +148,13 @@ def run():
     p_nyk_home = per_game_nyk_prob(True, nyk_elo, sas_elo, pyth)
     p_nyk_away = per_game_nyk_prob(False, nyk_elo, sas_elo, pyth)
 
-    start_nyk = series.get("nyk_wins", 0)
-    start_sas = series.get("sas_wins", 0)
-    start_game = series.get("next_game_index", 0)
+    # play out the series from the current standing with the shared monte carlo
+    monte_carlo = run_series_monte_carlo(p_nyk_home, p_nyk_away, series)
 
-    nyk_series_wins = 0
-    series_length_counts = {4: 0, 5: 0, 6: 0, 7: 0}
-    for _ in range(NUM_SIMULATIONS):
-        nyk_w, sas_w = simulate_series(p_nyk_home, p_nyk_away, start_nyk, start_sas, start_game)
-        if nyk_w == 4:
-            nyk_series_wins += 1
-        series_length_counts[nyk_w + sas_w] += 1
-
-    nyk_pct = nyk_series_wins / NUM_SIMULATIONS * 100
     return {
         "engine": "Elo Power Rating Model",
         "simulations": NUM_SIMULATIONS,
-        "series_state": {"nyk_wins": start_nyk, "sas_wins": start_sas},
+        "series_state": {"nyk_wins": series.get("nyk_wins", 0), "sas_wins": series.get("sas_wins", 0)},
         "elo": {"NYK": nyk_elo, "SAS": sas_elo, "start": ELO_START},
         "elo_trajectory": {"NYK": nyk_traj, "SAS": sas_traj},
         "pythagorean": pyth,
@@ -205,11 +164,8 @@ def run():
             "sas_home": round((1 - p_nyk_away) * 100, 1),
             "sas_away": round((1 - p_nyk_home) * 100, 1),
         },
-        "series": {"NYK": round(nyk_pct, 1), "SAS": round(100 - nyk_pct, 1)},
-        "series_length": {
-            str(length): round(series_length_counts[length] / NUM_SIMULATIONS * 100, 1)
-            for length in (4, 5, 6, 7)
-        },
+        "series": monte_carlo["series"],
+        "series_length": monte_carlo["series_length"],
     }
 
 
