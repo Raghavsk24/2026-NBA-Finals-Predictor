@@ -13,6 +13,7 @@ from nba_api.stats.endpoints import (
     teamgamelogs,
     commonteamroster,
     leaguedashplayerstats,
+    boxscoretraditionalv3,
 )
 
 SEASON = "2025-26"
@@ -227,6 +228,37 @@ def collect_finals_games():
     return finals
 
 
+def collect_finals_boxscore(finals):
+    # the player box score from the most recent finals game, keyed by player id. we use it to set
+    # the roster lab to the latest playoff minutes and stat line rather than the regular season
+    # averages, so the dashboard reflects how the rotation actually played in the series.
+    if not finals:
+        return {}
+    game_id = finals[-1]["game_id"]
+    rows = retry_fetch(
+        "finals_boxscore",
+        lambda t: boxscoretraditionalv3.BoxScoreTraditionalV3(game_id=game_id, timeout=t),
+    )
+    if not rows:
+        return {}
+
+    out = {}
+    for r in rows:
+        minutes = r.get("minutes") or "0:00"
+        try:
+            mm, ss = str(minutes).split(":")
+            played = round(int(mm) + int(ss) / 60.0, 1)
+        except (ValueError, AttributeError):
+            played = 0.0
+        out[r.get("personId")] = {
+            "min": played,
+            "pts": r.get("points", 0),
+            "reb": r.get("reboundsTotal", 0),
+            "ast": r.get("assists", 0),
+        }
+    return out
+
+
 def build_series(finals):
     # turn the played finals games into the current series standing plus a small display record
     nyk_wins = sas_wins = 0
@@ -361,6 +393,13 @@ def main():
 
     nyk_players = [build_player(p["name"], p["pos"], p["id"], base, adv, nyk_roster) for p in NYK_STARTERS]
     sas_players = [build_player(p["name"], p["pos"], p["id"], base, adv, sas_roster) for p in SAS_STARTERS]
+
+    # set each starter's minutes and stat line to the most recent finals game so the roster lab
+    # opens on the latest playoff data; the efficiency stats stay on the season averages
+    boxscore = collect_finals_boxscore(series.get("games", []))
+    for player in nyk_players + sas_players:
+        if player["id"] in boxscore:
+            player.update(boxscore[player["id"]])
 
     # the knicks bench carries mitchell robinson, injured by default but toggleable
     nyk_bench = [
