@@ -7,7 +7,7 @@
 */
 
 import { motion } from "motion/react";
-import { SPURS_GREY, TEAMS } from "@/lib/teams";
+import { TEAMS } from "@/lib/teams";
 
 export function WinProbabilityBar({
   nyk,
@@ -33,7 +33,7 @@ export function WinProbabilityBar({
       >
         <motion.div
           className="absolute inset-y-0 left-0"
-          style={{ backgroundColor: SPURS_GREY }}
+          style={{ backgroundColor: TEAMS.NYK.color }}
           initial={false}
           animate={{ width: `${nyk}%` }}
           transition={{ type: "spring", stiffness: 120, damping: 20 }}
