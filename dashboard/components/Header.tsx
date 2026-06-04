@@ -64,7 +64,7 @@ export function Header() {
 
           <p className="mx-auto mt-4 max-w-2xl text-sm text-muted-foreground sm:text-base">
             We use three different prediction engines to simulate the 2026 NBA Finals between the
-            New York Knicks and San Antonio Spurs. See how we created prediction models on{" "}
+            New York Knicks and San Antonio Spurs. See how we created the prediction models on{" "}
             <a
               href="https://medium.com/@senthilkumaraghav/week-2-of-13-predicting-the-2026-nba-finals-194bdfdb1530"
               target="_blank"
@@ -95,7 +95,7 @@ export function Header() {
           items-center alignment lands the vs on the headshot row, so it sits between karl-anthony
           towns and de'aaron fox rather than at the top of the columns.
         */}
-        <div className="mt-10 grid grid-cols-1 gap-8 lg:grid-cols-[1fr_auto_1fr] lg:items-center lg:gap-6">
+        <div className="mt-5 grid grid-cols-1 gap-8 lg:grid-cols-[1fr_auto_1fr] lg:items-center lg:gap-6">
           <TeamRoster teamKey="NYK" />
           <div className="flex justify-center">
             <span className="stat-display text-3xl text-black sm:text-4xl">VS</span>

@@ -11,9 +11,9 @@ export function SeriesStatus() {
   if (!display || display.length === 0) return null;
 
   return (
-    <div className="mt-6 flex flex-col items-center gap-2">
+    <div className="mt-6 flex justify-center">
       <div className="flex items-center gap-3 rounded-full border border-border bg-white/70 px-4 py-1.5 shadow-sm backdrop-blur">
-        <span className="eyebrow text-[11px] text-walnut">Finals Series</span>
+        <span className="eyebrow text-[11px] text-walnut">NBA Finals:</span>
         <span className="flex items-center gap-1.5">
           <span className="text-sm font-semibold" style={{ color: TEAMS.NYK.color }}>
             Knicks
@@ -22,7 +22,7 @@ export function SeriesStatus() {
             {nyk_wins}
           </span>
         </span>
-        <span className="text-muted-foreground">to</span>
+        <span className="text-muted-foreground">-</span>
         <span className="flex items-center gap-1.5">
           <span className="stat-display text-lg" style={{ color: TEAMS.SAS.color }}>
             {sas_wins}
@@ -32,14 +32,6 @@ export function SeriesStatus() {
           </span>
         </span>
       </div>
-      <p className="text-center text-xs text-muted-foreground">
-        {display
-          .map(
-            (g) =>
-              `Game ${g.game} in ${g.home === "SAS" ? "San Antonio" : "New York"}: Knicks ${g.nyk}, Spurs ${g.sas}`
-          )
-          .join("  ·  ")}
-      </p>
     </div>
   );
 }
