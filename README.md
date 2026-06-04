@@ -1,20 +1,22 @@
 # 2026 NBA Finals Predictor
 
-Picking a Finals winner usually means trusting a single number from a single model. This project runs three independent prediction engines side by side, from a clean efficiency baseline to a layered player impact model, to forecast the 2026 NBA Finals between the New York Knicks and San Antonio Spurs. Each engine runs **10,000 Monte Carlo simulations** of the best of seven, and the most complex engine is fully interactive: injure a player or change his minutes in the browser and the series rebuilds instantly. The aggregation layer of that engine is a ridge logistic regression trained to **94.1% accuracy** on the 2025-26 season.
+ This project runs three independent prediction engines side by side to forecast the 2026 NBA Finals between the New York Knicks and San Antonio Spurs. Each engine runs **10,000 Monte Carlo simulations** for the best of 7 games and outputs the probability that each team will wi the finals. The results have been launched to an interactive, publicly available dashboard. Users can change different variables to see how each player will affect the outcome of the 2026 NBA finals. 
 
-**Live App:** https://2026-nba-finals-predictor.vercel.app
-
-<table>
+ <table>
   <tr>
-    <td><img src="" alt="Knicks v Spurs header and rosters" width="100%"/></td>
-    <td><img src="" alt="Pace-adjusted efficiency engine" width="100%"/></td>
+    <img width=49% height=49% <img width="1726" height="944" alt="image" src="https://github.com/user-attachments/assets/d124c42f-8a3a-403b-9d45-dfe7d02be416" />
+    <img width=49% height=49% <img width="1723" height="943" alt="image" src="https://github.com/user-attachments/assets/bf094ddf-1757-47af-9c04-b3ec04faf0f7" />
+
+
   </tr>
   <tr>
-    <td><img src="" alt="Elo power rating engine" width="100%"/></td>
-    <td><img src="" alt="Interactive four factor player impact engine" width="100%"/></td>
+    <img width=49% height=49% <img width="1708" height="769" alt="image" src="https://github.com/user-attachments/assets/87e1f212-546e-4cc5-ae83-970850e73568" />
+    <img width=49% height=49% <img width="1659" height="755" alt="image" src="https://github.com/user-attachments/assets/bf7a0ffd-1f1e-4375-9c9f-0f093b11f3b2" />
+
   </tr>
 </table>
-<!-- Add screenshot URLs above -->
+
+**Live App:** https://2026-nba-finals-predictor.vercel.app/
 
 ## Tech Stack
 
@@ -42,53 +44,53 @@ Picking a Finals winner usually means trusting a single number from a single mod
 
 ## Prediction Engines
 
-Python is the source of truth. The engines collect data, train models, and export compact JSON, then the dashboard ports the same math to TypeScript so every engine runs live in the browser with no backend.
+I collected all my data from [nba_api](https://github.com/swar/nba_api) to train three different prediction models using Pythons. The table below explains the three different prediction engines I built.
 
-| Engine | Technique | What it answers |
-| ------ | --------- | --------------- |
-| Pace-Adjusted Efficiency | Offensive and defensive rating plus pace, Monte Carlo | A clean baseline series probability |
-| Elo Power Rating | Season long Elo blended with Pythagorean expectation | How much the full season body of work favors each team |
-| Four Factor Player-Impact | Five stacked layers plus a ridge logistic regression | How injuries, matchups, and minutes reshape the series |
+| Engine | Technique | 
+| ------ | --------- | 
+| Pace-Adjusted Efficiency Model | A simple prediction model that uses only each team's offensive rating, defensive rating and pacing to predict the each team's probability of winning the 2026 NBA Finals after running 10,000 monte carlo simulations.
+| Elo Power Rating Model|  It rates every team with an elo system built game by game across the 2025-26 season. It then combines that with each finals team's pythagorean expectation (an estimate of how many games a team "should win" based on their offesive and defensive ratings) to predict each team's probability of winning the series after running 10,000 monte carlo simulations. 
+| Four Factor Player-Impact Model| It layers a player-level projections on top of team-level four factors efficiency rating to produce a more granular prediction that can also be used to explore how the outcome of the series is affected when players are injured or playing time varies. The model composes off five layers and is aggregated using logistic regression
 
 ### 1. Pace-Adjusted Efficiency Model
 
-The baseline. Each team's offense is adjusted by the opponent's defense relative to the league, then scaled by the expected pace of the game.
+This is the baseline prediction model. Each team's offense is adjusted by the opponent's defense relative to the league, then scaled by the expected pace of the game.
 
 ```
 adjusted_ortg = ortg + (opponent_drtg - league_avg_drtg)
 expected_points = (adjusted_ortg / 100) * expected_pace
 ```
 
-The point margin is treated as a normal distribution whose standard deviation is computed directly from the Knicks' and Spurs' actual game results this season, about **15.25** points, rather than assumed. Home court is worth **3** points, and the model plays the 2-2-1-1-1 series **10,000** times.
+The point margin is treated as a normal distribution whose standard deviation is computed directly from the Knicks' and Spurs' actual game results this season, which is about **15.25** points. If a team plays on their home court they are given a boost of **3 points**. The model runs 10,000 simulations using the team expected points and ultimately forecasts that the Spurs are the favorites to win this series with a **~65% win probability**.
 
-### 2. Elo Power Rating Model
+### 2. ELO Power Rating Model
 
-Every team is rated game by game across the 2025-26 season, starting at **1500** with a K factor of **20**, a margin of victory multiplier, and a **100** point home court bump. The Elo gap is blended with each team's Pythagorean win expectation, computed from points scored and allowed with an exponent of **16.5**, then combined head to head with the Bill James log5 formula. The default blend trusts Elo **60%** and Pythagorean **40%**.
+Every team is rated game by game across the 2025-26 season by their ELO, starting at **1500** with a K factor of **20**, a margin of victory multiplier, and a **100** point home court bump. The ELO gap is blended with each team's Pythagorean win expectation, computed from points scored and allowed with an exponent of **16.5**, then combined head to head with the Bill James log5 formula. The default blend weights Elo **60%** and Pythagorean **40%**. Users can adjust the weighting on the dashboard to see how that affects the model's predictions.
+
+This model also forecasts that the Spurs will win the series but with a much higher win probability of **~80 percent** becuase the Spur's ELO rating is much higher than the Knicks.
 
 ### 3. Four Factor Player-Impact Model
 
-The most complex engine, and by design the most overfit. It stacks five layers:
+The most complex engine stacks five layers:
 
-1. **Team four factors.** Oliver Dean's effective field goal percentage, turnover rate, offensive rebound rate, and free throw rate, weighted roughly 40, 25, 20, 15.
-2. **Player efficiency.** A per minute offensive quality that blends true shooting with usage, so losing a high usage creator hurts even when his efficiency is only average. Injured players drop out of the calculation.
-3. **Matchup adjustment.** Each starter is scaled by the defender across from him, using that defender's defensive rating, steals, and blocks. A healthy Victor Wembanyama suppresses the man he guards.
-4. **Minutes.** A fixed pool of starter minutes is conserved. Injuries and minute changes redistribute that pool, with any shortfall filled by replacement level production.
-5. **Aggregation.** The four factor edges feed a ridge regularized L2 logistic regression trained on every team game of the season:
+1. **Layer One** We calculate each team's efficiency rating using Oliver Dean's four factors: Effective Field Goal Percentage (eFG%), Turnover Percentage (TOV%), Offensive Rebounding Percentage (ORB%), Free Throw Attempt Rate (FTA Rate).
+2. **Layer Two** We score each player's individual offensive efficiency using their true shooting percentage and usage rate.
+3. **Layer Three** We adjust each player's individual offensive efficiency against the strength of their defender. You can view the matchups below.
+4. **Layer Four** We weight each player based on the number of minutes they are expected to play in the finals. You can adjust each players minutes to see how the series win probability for each team changes.
+5. **Layer Five** We combine layers 1-4 into a a single win probability for both teams using a logistic regression model. We then run 10,000 monte carlo simulations to simulate the series.
 
 ```
 P(Knicks win game) = sigmoid(b0 + sum(b_i * z_i))
 ```
 
-where each `z_i` is a standardized four factor differential plus a home flag. The model trains to **94.1%** accuracy, then the series is resolved with **10,000** Monte Carlo runs. The browser recomputes all five layers on every injury toggle and minutes change.
+Again, this model forecasts that the Spurs win the series but it gives them the lowest win probability at **~ 60 percent**.
 
 ## Features
 
-1. Three prediction engines stacked on a single scrolling dashboard, simplest first.
-2. Live win probability, series length distribution, and per game odds for every engine.
-3. An interactive Roster Lab where injuring a player or dragging his minutes rebuilds the prediction in real time.
-4. Projected points, rebounds, and assists for every rotation player, updated live with the matchups.
-5. A season long Elo trajectory chart and a four factor radar that flexes with the current lineup.
-6. Real 2025-26 data, team logos, and player headshots pulled from public NBA sources.
+1. Live win probability, series length distribution, and per game odds for every engine.
+2. An interactive Roster Lab where injuring a player or dragging his minutes rebuilds the prediction in real time.
+3. Projected points, rebounds, and assists for every rotation player, and efficiency graph for each player
+4. A season long Elo trajectory chart and a four factor radar that flexes with the current lineup.
 
 ## Getting Started
 
