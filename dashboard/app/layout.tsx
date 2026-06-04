@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
 import { Anton, Hanken_Grotesk, Geist_Mono } from "next/font/google";
+import { Analytics } from "@vercel/analytics/next";
 import "./globals.css";
 
 // anton is a heavy condensed display face that reads like a broadcast scorebug
@@ -50,6 +51,7 @@ export default function RootLayout({
         {/* fixed wooden floor and grid backdrop that shows through the whole page */}
         <div className="floor-backdrop" aria-hidden="true" />
         {children}
+        <Analytics />
       </body>
     </html>
   );
