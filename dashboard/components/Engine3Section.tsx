@@ -21,6 +21,7 @@ import { WinProbabilityBar } from "@/components/WinProbabilityBar";
 import { SeriesLengthBars } from "@/components/SeriesLengthBars";
 import { FourFactorRadar } from "@/components/FourFactorRadar";
 import { PlayerFourFactorRadar } from "@/components/PlayerFourFactorRadar";
+import { TeamMark, PlayerMonogram } from "@/components/Marks";
 import { Card } from "@/components/ui/card";
 import { Slider } from "@/components/ui/slider";
 import { Switch } from "@/components/ui/switch";
@@ -100,7 +101,7 @@ export function Engine3Section() {
             {/* team headers act as the two column headers on larger screens only */}
             {(["NYK", "SAS"] as TeamKey[]).map((key) => (
               <div key={key} className="hidden items-center gap-2 sm:flex">
-                <img src={TEAMS[key].logo} alt="" className="h-5 w-5 object-contain" />
+                <TeamMark abbr={TEAMS[key].abbr} color={TEAMS[key].color} className="h-5 w-5 rounded-[5px] text-[7px]" />
                 <span className="text-sm font-bold uppercase tracking-wide">{TEAMS[key].name}</span>
               </div>
             ))}
@@ -166,12 +167,7 @@ function PlayerCard({
       style={{ borderColor: injured ? "var(--border)" : teamColor + "55" }}
     >
       <div className="flex items-center gap-3">
-        <img
-          src={player.headshot}
-          alt={player.name}
-          loading="lazy"
-          className="h-10 w-10 shrink-0 rounded-full border border-border object-cover object-top"
-        />
+        <PlayerMonogram name={player.name} color={teamColor} className="h-10 w-10 text-xs" />
         <div className="min-w-0 flex-1">
           <div className="flex items-center gap-1.5">
             <span className="truncate text-sm font-bold">{player.name}</span>
@@ -190,8 +186,8 @@ function PlayerCard({
               </TooltipContent>
             </Tooltip>
           </div>
-          <div className="flex items-center gap-1 text-xs text-muted-foreground">
-            <img src={TEAMS[teamKey].logo} alt="" className="h-3.5 w-3.5 shrink-0 object-contain" />
+          <div className="flex items-center gap-1.5 text-xs text-muted-foreground">
+            <span className="h-2.5 w-2.5 shrink-0 rounded-full" style={{ backgroundColor: teamColor }} />
             <span>
               {player.pos} &middot; {(player.usg * 100).toFixed(0)}% usage &middot; Rating {rating}
             </span>

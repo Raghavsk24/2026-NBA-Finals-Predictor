@@ -15,7 +15,7 @@ export const TEAMS = {
     short: "Knicks",
     color: KNICKS_ORANGE,
     soft: "#fde8d6",
-    logo: playersData.NYK.logo,
+    abbr: playersData.NYK.abbr,
     record: { w: 53, l: 29 },
   },
   SAS: {
@@ -24,7 +24,7 @@ export const TEAMS = {
     short: "Spurs",
     color: SPURS_GREY,
     soft: "#e9ecee",
-    logo: playersData.SAS.logo,
+    abbr: playersData.SAS.abbr,
     record: { w: 62, l: 20 },
   },
 };

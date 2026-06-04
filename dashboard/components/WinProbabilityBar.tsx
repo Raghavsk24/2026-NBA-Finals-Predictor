@@ -7,6 +7,7 @@
 */
 
 import { motion } from "motion/react";
+import { TeamMark } from "@/components/Marks";
 import { TEAMS } from "@/lib/teams";
 
 export function WinProbabilityBar({
@@ -73,10 +74,10 @@ function TeamScore({
           align === "right" ? "flex-row-reverse" : ""
         }`}
       >
-        <img
-          src={team.logo}
-          alt={`${team.short} logo`}
-          className="h-5 w-5 shrink-0 object-contain sm:h-6 sm:w-6"
+        <TeamMark
+          abbr={team.abbr}
+          color={team.color}
+          className="h-5 w-5 rounded-[5px] text-[7px] sm:h-6 sm:w-6 sm:text-[8px]"
         />
         <span className="text-xs font-semibold tracking-wide sm:text-sm">{team.short}</span>
         <span

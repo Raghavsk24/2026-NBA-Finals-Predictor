@@ -20,8 +20,8 @@ export function Footer() {
           <span className="text-muted-foreground">
             This is an unofficial, educational project and is not affiliated with, endorsed by, or
             sponsored by the National Basketball Association, the New York Knicks, the San Antonio
-            Spurs, or any of their players. All team names, logos, and player images are the
-            property of their respective owners. Data is sourced from public NBA statistics via the{" "}
+            Spurs, or any of their players. All team and player names are the property of their
+            respective owners. Data is sourced from public NBA statistics via the{" "}
             <a
               href="https://github.com/swar/nba_api"
               target="_blank"

@@ -1,36 +1,11 @@
 /*
-  the page hero. it titles the matchup knicks v spurs, shows both team logos, lays out the
-  starting five for each team with headshots and names underneath, and ends with a scroll cue
-  that drops the user into the first engine.
+  the page hero. it titles the matchup knicks v spurs with both team marks, carries the project
+  subtext and the medium link, and ends with the current series status.
 */
 
-import { RosterCard } from "@/components/RosterCard";
-import { ScrollCue } from "@/components/ScrollCue";
 import { SeriesStatus } from "@/components/SeriesStatus";
-import { playersData } from "@/lib/data";
+import { TeamMark } from "@/components/Marks";
 import { TEAMS } from "@/lib/teams";
-
-function TeamRoster({ teamKey }: { teamKey: "NYK" | "SAS" }) {
-  const team = TEAMS[teamKey];
-  const starters = playersData[teamKey].starters;
-  return (
-    <div>
-      <div className="mb-3 flex items-center justify-center gap-2 lg:justify-start">
-        <img src={team.logo} alt={`${team.name} logo`} className="h-7 w-7 object-contain" />
-        <span className="text-sm font-bold uppercase tracking-wide">{team.name}</span>
-        {/* regular season record in parentheses, in solid black */}
-        <span className="text-xs text-black">
-          ({team.record.w}-{team.record.l})
-        </span>
-      </div>
-      <div className="grid grid-cols-5 gap-2 sm:gap-3">
-        {starters.map((p) => (
-          <RosterCard key={p.id} player={p} color={team.color} />
-        ))}
-      </div>
-    </div>
-  );
-}
 
 export function Header() {
   return (
@@ -44,10 +19,10 @@ export function Header() {
           <p className="eyebrow text-xs text-walnut sm:text-sm">2026 NBA Finals Prediction Engine</p>
 
           <div className="mt-3 flex items-center justify-center gap-2 sm:gap-7">
-            <img
-              src={TEAMS.NYK.logo}
-              alt="New York Knicks logo"
-              className="h-10 w-10 shrink-0 object-contain sm:h-20 sm:w-20"
+            <TeamMark
+              abbr={TEAMS.NYK.abbr}
+              color={TEAMS.NYK.color}
+              className="h-10 w-10 rounded-xl text-xs sm:h-20 sm:w-20 sm:rounded-2xl sm:text-2xl"
             />
             <h1 className="stat-display text-4xl text-ink sm:text-7xl md:text-8xl">
               <span style={{ color: TEAMS.NYK.color }}>KNICKS</span>
@@ -55,10 +30,10 @@ export function Header() {
               <span className="mx-2 text-[0.75em] text-walnut sm:mx-8">vs.</span>
               <span style={{ color: TEAMS.SAS.color }}>SPURS</span>
             </h1>
-            <img
-              src={TEAMS.SAS.logo}
-              alt="San Antonio Spurs logo"
-              className="h-10 w-10 shrink-0 object-contain sm:h-20 sm:w-20"
+            <TeamMark
+              abbr={TEAMS.SAS.abbr}
+              color={TEAMS.SAS.color}
+              className="h-10 w-10 rounded-xl text-xs sm:h-20 sm:w-20 sm:rounded-2xl sm:text-2xl"
             />
           </div>
 
@@ -89,21 +64,6 @@ export function Header() {
 
           <SeriesStatus />
         </div>
-
-        {/*
-          rosters laid out in three columns on desktop with the vs centered between them. the
-          items-center alignment lands the vs on the headshot row, so it sits between karl-anthony
-          towns and de'aaron fox rather than at the top of the columns.
-        */}
-        <div className="mt-5 grid grid-cols-1 gap-8 lg:grid-cols-[1fr_auto_1fr] lg:items-center lg:gap-6">
-          <TeamRoster teamKey="NYK" />
-          <div className="flex justify-center">
-            <span className="stat-display text-3xl text-black sm:text-4xl">VS</span>
-          </div>
-          <TeamRoster teamKey="SAS" />
-        </div>
-
-        <ScrollCue />
       </div>
     </header>
   );
