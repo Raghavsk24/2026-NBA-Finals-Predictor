@@ -69,7 +69,7 @@ The ELO Power Rating Model addresses the largest blind spot of the baseline, nam
 
 <img width="1708" height="769" alt="image" src="https://github.com/user-attachments/assets/87e1f212-546e-4cc5-ae83-970850e73568" />
 
-<br>However, an ELO rating alone can be distorted by a team that wins an unusual number of close games. To address this, I combined the ELO estimate with the **Pythagorean expectation**, which estimates the win rate a team deserved based purely on points scored and points allowed. Essentially, the Pythagorean theorem calculates the total number of points the Knicks and Spurs scored this season and the total number of points their opponents scored on them.
+<br>However, an ELO rating alone can be distorted by a team that wins an unusual number of close games. To address this, I combined the ELO estimate with the **Pythagorean expectation**, which estimates the win rate a team deserved based purely on points scored and points allowed. Essentially, the Pythagorean expectation calculates the total number of points the Knicks and Spurs scored this season and the total number of points their opponents scored on them.
 
 Using the standard basketball exponent of 16.5, the Knicks earned a Pythagorean expectation of about ***71.5 percent*** and the Spurs about ***76.6 percent***. For the final win probabilities, I weighted the ELO rating at 60 percent and the Pythagorean expectation at 40 percent (you can adjust the weightage on the live dashboard to see how that affects the win probability). I ran the numbers across the same 10,000 monte carlo simulations, and the model gave the Spurs an ***~80% probability*** of winning the finals.
 
@@ -93,7 +93,7 @@ The overall model comprises 5 layers:
 2. **Layer Two:** We score each player's individual offensive efficiency using their true shooting percentage and usage rate.
 3. **Layer Three:** We adjust each player's individual offensive efficiency against the strength of their defender. You can view the matchups below.
 4. **Layer Four:** We weight each player based on the number of minutes they are expected to play in the finals. You can adjust each player's minutes to see how the series win probability for each team changes.
-5. **Layer Five:** We combine layers 1-4 into a a single win probability for both teams using a logistic regression model. We then run 10,000 monte carlo simulations to simulate the series.
+5. **Layer Five:** We combine layers 1-4 into a single win probability for both teams using a logistic regression model. We then run 10,000 monte carlo simulations to simulate the series.
 
 This model gives the Spurs the lowest chances of winning at ***about 62 percent***. In the live dashboard you can play around with different variables that this model uses. For example, if you decide to injure Victor Webanyama, you will see that the probability of winning the series for the Knicks increases from 38 percent to 78 percent.
 
