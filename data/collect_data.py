@@ -228,33 +228,54 @@ def collect_finals_games():
     return finals
 
 
+def parse_minutes(value):
+    # turn a "MM:SS" minutes string into a float number of minutes, zero when it cannot be parsed
+    try:
+        mm, ss = str(value or "0:00").split(":")
+        return round(int(mm) + int(ss) / 60.0, 1)
+    except (ValueError, AttributeError):
+        return 0.0
+
+
 def collect_finals_boxscore(finals):
-    # the player box score from the most recent finals game, keyed by player id. we use it to set
-    # the roster lab to the latest playoff minutes and stat line rather than the regular season
-    # averages, so the dashboard reflects how the rotation actually played in the series.
+    # the per game stat line for each player, averaged across every finals game played so far and
+    # keyed by player id. averaging across the series rather than reading a single game keeps a
+    # quiet night from being shown as a player's season long scoring, so the roster lab reflects how
+    # the rotation has actually played in the finals. games a player did not appear in are excluded
+    # so the average stays a true per game played figure.
     if not finals:
         return {}
-    game_id = finals[-1]["game_id"]
-    rows = retry_fetch(
-        "finals_boxscore",
-        lambda t: boxscoretraditionalv3.BoxScoreTraditionalV3(game_id=game_id, timeout=t),
-    )
-    if not rows:
-        return {}
+
+    totals = {}
+    for game in finals:
+        game_id = game["game_id"]
+        rows = retry_fetch(
+            "finals_boxscore_" + game_id,
+            lambda t, gid=game_id: boxscoretraditionalv3.BoxScoreTraditionalV3(game_id=gid, timeout=t),
+        )
+        if not rows:
+            continue
+        for r in rows:
+            played = parse_minutes(r.get("minutes"))
+            if played <= 0:
+                continue
+            agg = totals.setdefault(
+                r.get("personId"), {"min": 0.0, "pts": 0, "reb": 0, "ast": 0, "games": 0}
+            )
+            agg["min"] += played
+            agg["pts"] += r.get("points", 0) or 0
+            agg["reb"] += r.get("reboundsTotal", 0) or 0
+            agg["ast"] += r.get("assists", 0) or 0
+            agg["games"] += 1
 
     out = {}
-    for r in rows:
-        minutes = r.get("minutes") or "0:00"
-        try:
-            mm, ss = str(minutes).split(":")
-            played = round(int(mm) + int(ss) / 60.0, 1)
-        except (ValueError, AttributeError):
-            played = 0.0
-        out[r.get("personId")] = {
-            "min": played,
-            "pts": r.get("points", 0),
-            "reb": r.get("reboundsTotal", 0),
-            "ast": r.get("assists", 0),
+    for person_id, agg in totals.items():
+        games = agg["games"]
+        out[person_id] = {
+            "min": round(agg["min"] / games, 1),
+            "pts": round(agg["pts"] / games, 1),
+            "reb": round(agg["reb"] / games, 1),
+            "ast": round(agg["ast"] / games, 1),
         }
     return out
 
