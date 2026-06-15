@@ -51,6 +51,8 @@ def load_series():
 def simulate_series(p_nyk_home, p_nyk_away, start_nyk=0, start_sas=0, start_game=0):
     # play out the rest of the best of seven from the current standing until a team reaches four wins
     nyk_wins, sas_wins = start_nyk, start_sas
+    if nyk_wins == 4 or sas_wins == 4:
+        return nyk_wins, sas_wins
     for game_index in range(start_game, 7):
         sas_home = SAS_HOME_BY_GAME[game_index]
         p_nyk = p_nyk_away if sas_home else p_nyk_home

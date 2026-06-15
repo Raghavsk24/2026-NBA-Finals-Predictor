@@ -2,12 +2,12 @@
   "engine": "Elo Power Rating Model",
   "simulations": 10000,
   "series_state": {
-    "nyk_wins": 3,
+    "nyk_wins": 4,
     "sas_wins": 1
   },
   "elo": {
-    "NYK": 1698.0,
-    "SAS": 1759.7,
+    "NYK": 1722.9,
+    "SAS": 1734.7,
     "start": 1500.0
   },
   "elo_trajectory": {
@@ -97,7 +97,8 @@
       1700.7,
       1711.3,
       1691.7,
-      1698.0
+      1698.0,
+      1722.9
     ],
     "SAS": [
       1547.3,
@@ -185,35 +186,36 @@
       1757.0,
       1746.4,
       1766.0,
-      1759.7
+      1759.7,
+      1734.7
     ]
   },
   "pythagorean": {
     "NYK": {
-      "pf": 9977,
-      "pa": 9450,
-      "winpct": 0.71
+      "pf": 10071,
+      "pa": 9540,
+      "winpct": 0.7097
     },
     "SAS": {
-      "pf": 10246,
-      "pa": 9573,
-      "winpct": 0.7542
+      "pf": 10336,
+      "pa": 9667,
+      "winpct": 0.751
     }
   },
   "per_game": {
-    "nyk_home": 52.4,
-    "nyk_away": 33.3,
-    "sas_home": 66.7,
-    "sas_away": 47.6
+    "nyk_home": 56.8,
+    "nyk_away": 37.2,
+    "sas_home": 62.8,
+    "sas_away": 43.2
   },
   "series": {
-    "NYK": 78.6,
-    "SAS": 21.4
+    "NYK": 100.0,
+    "SAS": 0.0
   },
   "series_length": {
     "4": 0.0,
-    "5": 33.4,
-    "6": 34.8,
-    "7": 31.9
+    "5": 100.0,
+    "6": 0.0,
+    "7": 0.0
   }
 }

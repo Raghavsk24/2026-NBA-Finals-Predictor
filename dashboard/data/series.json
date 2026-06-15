@@ -1,8 +1,8 @@
 {
-  "nyk_wins": 3,
+  "nyk_wins": 4,
   "sas_wins": 1,
-  "games_played": 4,
-  "next_game_index": 4,
+  "games_played": 5,
+  "next_game_index": 5,
   "games": [
     {
       "game_id": "0042500401",
@@ -47,6 +47,17 @@
       "away_abbr": "SAS",
       "away_pts": 106,
       "home_win": 1
+    },
+    {
+      "game_id": "0042500405",
+      "date": "2026-06-13",
+      "home_id": 1610612759,
+      "home_abbr": "SAS",
+      "home_pts": 90,
+      "away_id": 1610612752,
+      "away_abbr": "NYK",
+      "away_pts": 94,
+      "home_win": 0
     }
   ],
   "display": [
@@ -76,6 +87,13 @@
       "home": "NYK",
       "nyk": 107,
       "sas": 106,
+      "winner": "NYK"
+    },
+    {
+      "game": 5,
+      "home": "SAS",
+      "nyk": 94,
+      "sas": 90,
       "winner": "NYK"
     }
   ]
