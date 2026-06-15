@@ -58,6 +58,7 @@ export function simulateSeries(
 ): { nyk: number; sas: number } {
   let nyk = start.nyk;
   let sas = start.sas;
+  if (nyk === 4 || sas === 4) return { nyk, sas };
   for (let game = start.game; game < 7; game++) {
     const sasHome = SAS_HOME_BY_GAME[game];
     const pNyk = sasHome ? pNykAway : pNykHome;
